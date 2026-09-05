@@ -67,5 +67,7 @@ extend it. The defaults:
 | `All:`                     | every platform — the default when there is no tag          |
 | `IOS+:` / `Android+:`      | seen on one platform, fix all, verify that one first       |
 | `Web+:` / `MobileWeb+:`    | seen in one browser, fix both web fronts, verify that one first |
+| `Chrome:` `Safari:` `Firefox:` `Edge:` | the web frontend in that browser only                  |
+| `Chrome+:` `Safari+:` `Firefox+:` `Edge+:` | seen in that browser, almost certainly in the others too: fix all, verify it first |
 | `Docs:` / `Infra:`         | documentation only / build, CI, tooling                    |
 | `QA:` / `Admin:`           | your own row — Claude never works, edits or ticks it       |

@@ -125,6 +125,14 @@ one) — `- [ ] #19 IOS: description`:
 | `Android+:`   | seen on Android, almost certainly elsewhere too: fix all, verify Android first                         |
 | `Web+:`       | seen in the desktop browser, almost certainly in the phone browser too: fix both, verify desktop first |
 | `MobileWeb+:` | seen in the phone browser, almost certainly in the desktop browser too: fix both, verify mobile first  |
+| `Chrome:`     | the web frontend in Chrome only                                                                        |
+| `Safari:`     | the web frontend in Safari only                                                                        |
+| `Firefox:`    | the web frontend in Firefox only                                                                       |
+| `Edge:`       | the web frontend in Edge only                                                                          |
+| `Chrome+:`    | seen in Chrome, almost certainly in the other browsers too: fix all, verify Chrome first               |
+| `Safari+:`    | seen in Safari, almost certainly in the other browsers too: fix all, verify Safari first               |
+| `Firefox+:`   | seen in Firefox, almost certainly in the other browsers too: fix all, verify Firefox first             |
+| `Edge+:`      | seen in Edge, almost certainly in the other browsers too: fix all, verify Edge first                   |
 | `Docs:`       | documentation only                                                                                     |
 | `Infra:`      | build, CI, tooling                                                                                     |
 | `QA:`         | the user's personal row — **Claude ignores it entirely**                                               |
