@@ -42,18 +42,20 @@ TODO.jd.archive.md       done items, moved by    header:  # My App — TODO arch
 
 ## Step 2 — the default tag table
 
-| Tag          | Meaning                                                                        |
-|--------------|--------------------------------------------------------------------------------|
-| `Android:`   | Android app only                                                               |
-| `IOS:`       | iOS app only                                                                   |
-| `Web:`       | web frontend in a desktop browser                                              |
-| `MobileWeb:` | web frontend in a phone browser                                                |
-| `Backend:`   | backend / API only                                                             |
-| `Desktop:`   | desktop app (macOS / Windows / Linux)                                          |
-| `All:`       | every platform — the default when no tag is present                            |
-| `IOS+:`      | seen on iOS, almost certainly elsewhere too: fix all, verify iOS first         |
-| `Android+:`  | seen on Android, almost certainly elsewhere too: fix all, verify Android first |
-| `Docs:`      | documentation only                                                             |
-| `Infra:`     | build, CI, tooling                                                             |
-| `QA:`        | the user's personal row — Claude ignores it entirely                           |
-| `Admin:`     | the user's personal row — Claude ignores it entirely                           |
+| Tag           | Meaning                                                                                                |
+|---------------|--------------------------------------------------------------------------------------------------------|
+| `Android:`    | Android app only                                                                                       |
+| `IOS:`        | iOS app only                                                                                           |
+| `Web:`        | web frontend in a desktop browser                                                                      |
+| `MobileWeb:`  | web frontend in a phone browser                                                                        |
+| `Backend:`    | backend / API only                                                                                     |
+| `Desktop:`    | desktop app (macOS / Windows / Linux)                                                                  |
+| `All:`        | every platform — the default when no tag is present                                                    |
+| `IOS+:`       | seen on iOS, almost certainly elsewhere too: fix all, verify iOS first                                 |
+| `Android+:`   | seen on Android, almost certainly elsewhere too: fix all, verify Android first                         |
+| `Web+:`       | seen in the desktop browser, almost certainly in the phone browser too: fix both, verify desktop first |
+| `MobileWeb+:` | seen in the phone browser, almost certainly in the desktop browser too: fix both, verify mobile first  |
+| `Docs:`       | documentation only                                                                                     |
+| `Infra:`      | build, CI, tooling                                                                                     |
+| `QA:`         | the user's personal row — Claude ignores it entirely                                                   |
+| `Admin:`      | the user's personal row — Claude ignores it entirely                                                   |

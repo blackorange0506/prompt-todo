@@ -13,6 +13,8 @@
       {"tag": "All", "meaning": "every platform"},
       {"tag": "IOS+", "meaning": "seen on iOS, almost certainly elsewhere too: fix all, verify iOS first"},
       {"tag": "Android+", "meaning": "seen on Android, almost certainly elsewhere too: fix all, verify Android first"},
+      {"tag": "Web+", "meaning": "seen in the desktop browser, almost certainly in the phone browser too: fix both, verify desktop first"},
+      {"tag": "MobileWeb+", "meaning": "seen in the phone browser, almost certainly in the desktop browser too: fix both, verify mobile first"},
       {"tag": "Docs", "meaning": "documentation only"},
       {"tag": "Infra", "meaning": "build, CI, tooling"}
     ],

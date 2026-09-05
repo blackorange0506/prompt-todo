@@ -112,21 +112,23 @@ No app-navigation skill is connected: when a ticket ends in a context block (the
 one) — `- [ ] #19 IOS: description`:
 
 <!-- todo-flow:tags -->
-| Tag          | Meaning                                                                        |
-|--------------|--------------------------------------------------------------------------------|
-| `Android:`   | Android app only                                                               |
-| `IOS:`       | iOS app only                                                                   |
-| `Web:`       | web frontend in a desktop browser                                              |
-| `MobileWeb:` | web frontend in a phone browser                                                |
-| `Backend:`   | backend / API only                                                             |
-| `Desktop:`   | desktop app (macOS / Windows / Linux)                                          |
-| `All:`       | every platform — also the **default** when no tag is present                   |
-| `IOS+:`      | seen on iOS, almost certainly elsewhere too: fix all, verify iOS first         |
-| `Android+:`  | seen on Android, almost certainly elsewhere too: fix all, verify Android first |
-| `Docs:`      | documentation only                                                             |
-| `Infra:`     | build, CI, tooling                                                             |
-| `QA:`        | the user's personal row — **Claude ignores it entirely**                       |
-| `Admin:`     | the user's personal row — **Claude ignores it entirely**                       |
+| Tag           | Meaning                                                                                                |
+|---------------|--------------------------------------------------------------------------------------------------------|
+| `Android:`    | Android app only                                                                                       |
+| `IOS:`        | iOS app only                                                                                           |
+| `Web:`        | web frontend in a desktop browser                                                                      |
+| `MobileWeb:`  | web frontend in a phone browser                                                                        |
+| `Backend:`    | backend / API only                                                                                     |
+| `Desktop:`    | desktop app (macOS / Windows / Linux)                                                                  |
+| `All:`        | every platform — also the **default** when no tag is present                                           |
+| `IOS+:`       | seen on iOS, almost certainly elsewhere too: fix all, verify iOS first                                 |
+| `Android+:`   | seen on Android, almost certainly elsewhere too: fix all, verify Android first                         |
+| `Web+:`       | seen in the desktop browser, almost certainly in the phone browser too: fix both, verify desktop first |
+| `MobileWeb+:` | seen in the phone browser, almost certainly in the desktop browser too: fix both, verify mobile first  |
+| `Docs:`       | documentation only                                                                                     |
+| `Infra:`      | build, CI, tooling                                                                                     |
+| `QA:`         | the user's personal row — **Claude ignores it entirely**                                               |
+| `Admin:`      | the user's personal row — **Claude ignores it entirely**                                               |
 <!-- /todo-flow:tags -->
 
 Ignoring a `QA:`/`Admin:` row means: never work it, rewrite it, tag it, or check it off — if

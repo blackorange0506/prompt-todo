@@ -66,5 +66,6 @@ extend it. The defaults:
 | `Desktop:`                 | the desktop app (macOS / Windows / Linux)                  |
 | `All:`                     | every platform — the default when there is no tag          |
 | `IOS+:` / `Android+:`      | seen on one platform, fix all, verify that one first       |
+| `Web+:` / `MobileWeb+:`    | seen in one browser, fix both web fronts, verify that one first |
 | `Docs:` / `Infra:`         | documentation only / build, CI, tooling                    |
 | `QA:` / `Admin:`           | your own row — Claude never works, edits or ticks it       |
