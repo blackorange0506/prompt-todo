@@ -69,7 +69,7 @@ Read once per run from `.claude/todo-flow/config.json`:
    *first prompt* for one piece of work, in the user's style: imperative, short (one or two
    lines), naming the surface the way the user would ("the checkout button on iOS", not a
    class name), one deliverable per item. Add a tag from the rules' tag table only when the
-   ticket says so (`IOS:`, `Android:`, `Frontend:` …; unspecified → no tag). A sub-bullet only
+   ticket says so (`IOS:`, `Android:`, `Web:` …; unspecified → no tag). A sub-bullet only
    for a constraint the ticket states explicitly. Do not invent scope the ticket does not
    contain; a ticket that is one task gets one item.
 

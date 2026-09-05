@@ -42,41 +42,18 @@ TODO.jd.archive.md       done items, moved by    header:  # My App — TODO arch
 
 ## Step 2 — the default tag table
 
-| Tag         | Meaning                                                                        |
-|-------------|--------------------------------------------------------------------------------|
-| `Android:`  | Android only                                                                   |
-| `IOS:`      | iOS only                                                                       |
-| `Frontend:` | web frontend only                                                              |
-| `Backend:`  | backend / API only                                                             |
-| `All:`      | every platform — the default when no tag is present                            |
-| `IOS+:`     | seen on iOS, almost certainly elsewhere too: fix all, verify iOS first         |
-| `Android+:` | seen on Android, almost certainly elsewhere too: fix all, verify Android first |
-| `Bug:`      | defect fix                                                                     |
-| `Feature:`  | new behaviour                                                                  |
-| `Refactor:` | no behaviour change                                                            |
-| `Docs:`     | documentation only                                                             |
-| `Infra:`    | build, CI, tooling                                                             |
-| `QA:`       | the user's personal row — Claude ignores it entirely                           |
-| `Admin:`    | the user's personal row — Claude ignores it entirely                           |
-
-A mobile-only team keeps the first two and the `+` pair; a backend team keeps `Bug:` to
-`Infra:`. The default tag can be set to none: an item without a tag then simply has no tag.
-
-## Step 4 — why a tracker connection
-
-See [jira-mcp.md](jira-mcp.md): what the connection is for, the worked example, the
-Atlassian MCP setup, the GitHub alternative and paste mode.
-
-## Step 5 — app navigation
-
-The wizard never builds the navigation skill for you. It offers to connect one you already
-have, or to skip and come back: filling the shipped carcass is described in
-[app-navigation.md](app-navigation.md). Connecting the carcass before it is filled is allowed
-(the wizard warns), so the rules and `/todoFromTicket` already produce the `/appNavigation`
-items while you work on it.
-
-## Team use
-
-Commit `.claude/todo-flow/config.json`, `RULES.md`, the skills and the hook. A teammate who
-clones the project gets the same flow; they run `/todoSetup todo` once for their own todo
-file, and `/todoSetup permissions` if they want the allow rules (that file is personal).
+| Tag          | Meaning                                                                        |
+|--------------|--------------------------------------------------------------------------------|
+| `Android:`   | Android app only                                                               |
+| `IOS:`       | iOS app only                                                                   |
+| `Web:`       | web frontend in a desktop browser                                              |
+| `MobileWeb:` | web frontend in a phone browser                                                |
+| `Backend:`   | backend / API only                                                             |
+| `Desktop:`   | desktop app (macOS / Windows / Linux)                                          |
+| `All:`       | every platform — the default when no tag is present                            |
+| `IOS+:`      | seen on iOS, almost certainly elsewhere too: fix all, verify iOS first         |
+| `Android+:`  | seen on Android, almost certainly elsewhere too: fix all, verify Android first |
+| `Docs:`      | documentation only                                                             |
+| `Infra:`     | build, CI, tooling                                                             |
+| `QA:`        | the user's personal row — Claude ignores it entirely                           |
+| `Admin:`     | the user's personal row — Claude ignores it entirely                           |

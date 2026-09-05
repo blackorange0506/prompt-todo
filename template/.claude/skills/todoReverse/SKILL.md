@@ -48,7 +48,7 @@ usual way.
 
 4. **Derive the prefix** from the dialog, in this order after the id: a ticket key if one was
    named (`PROJ-123`), then a tag from the tag table in the todo rules if the work was clearly
-   scoped to one (`IOS:`, `Android:`, `Frontend:`, `IOS+:` …). Never invent either.
+   scoped to one (`IOS:`, `Android:`, `Web:`, `IOS+:` …). Never invent either.
 
 5. **Append the item** at the end of the todo file:
 
