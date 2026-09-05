@@ -14,7 +14,7 @@ the prompt manager, the prompt tracker and the link between tickets and code.
 - Optional: an app-navigation skill that opens your app at the screen a ticket describes
   (Android and iOS through Maestro, web through Playwright) — shipped as a carcass you fill in.
 
-Read [docs/todo-workflow.md](docs/todo-workflow.md) for the whole flow with examples.
+Read [docs/todo-workflow.md](docs/todo-workflow.md) ("Smart TODO") for the whole flow with examples.
 
 ## Install
 
