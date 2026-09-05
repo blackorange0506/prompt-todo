@@ -67,12 +67,14 @@ set and one set of skills, and each person has their own todo file.
 ## Development
 
 ```bash
-bash tests/run.sh              # bash tests (hook, renderer, installer)
-bash scripts/lint.sh           # shellcheck + py_compile
+bash tests/run.sh              # hook, renderer, installer, spec parser, dispatcher, Playwright driver
+bash scripts/lint.sh           # shellcheck + py_compile + node --check
 bash scripts/check_banlist.sh  # no traces of the project this was extracted from
 ```
 
-CI runs all three on Linux and macOS (the macOS job also runs the tests under `/bin/bash` 3.2).
+The Playwright test needs `npm install && npx playwright install chromium` in
+`template/.claude/skills/appNavigation/drivers/frontend` and skips itself otherwise. CI runs
+everything on Linux and macOS (the macOS job also runs the tests under `/bin/bash` 3.2).
 
 ## License
 
