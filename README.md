@@ -1,7 +1,8 @@
-# claude-todo-flow
+# Prompt TODO
 
-A todo-driven workflow for [Claude Code](https://claude.com/claude-code): your todo file is
-the prompt manager, the prompt tracker and the link between tickets and code.
+A todo file that tracks your prompts and rewrites each finished one into the prompt you should
+have written. For [Claude Code](https://claude.com/claude-code): the todo file is the prompt
+manager, the prompt tracker and the link between tickets and code.
 
 - One markdown file per developer, `TODO.<git user.name>.md`, with numbered items.
 - Type `#12` and Claude works item 12. Type `works` and Claude ticks it **and rewrites it into
@@ -14,14 +15,14 @@ the prompt manager, the prompt tracker and the link between tickets and code.
 - Optional: an `/appNavigation` skill that opens your app at the screen a ticket describes —
   shipped as a description only; you implement it for your app.
 
-Read [docs/todo-workflow.md](docs/todo-workflow.md) ("Smart TODO") for the whole flow with examples.
+Read [docs/todo-workflow.md](docs/todo-workflow.md) for the whole flow with examples.
 
 ## Install
 
 ```bash
-git clone https://github.com/<you>/claude-todo-flow ~/src/claude-todo-flow
+git clone https://github.com/<you>/prompt-todo ~/src/prompt-todo
 cd ~/your/project
-bash ~/src/claude-todo-flow/install.sh          # add --without-app-navigation to skip that placeholder
+bash ~/src/prompt-todo/install.sh          # add --without-app-navigation to skip that placeholder
 ```
 
 Then open Claude Code in the project and run:
@@ -42,11 +43,11 @@ Atlassian MCP server (Jira) or the `gh` CLI (GitHub Issues).
 
 | Adds                                        | Purpose                                                       |
 |---------------------------------------------|---------------------------------------------------------------|
-| `.claude/todo-flow/`                        | `config.json` (yours), `RULES.md` (generated), the render scripts, the readme |
+| `.claude/prompt-todo/`                        | `config.json` (yours), `RULES.md` (generated), the render scripts, the readme |
 | `.claude/hooks/todo-confirm.sh`             | catches `works` / `fixed` so the rewrite never depends on memory |
 | `.claude/skills/todo*`                      | `/todoSetup`, `/todoFromTicket`, `/todoIdealPrompt`, `/todoIdealize`, `/todoNumber`, `/todoReverse`, `/todoArchive` |
 | `.claude/skills/appNavigation/`             | the navigation placeholder, a description to implement (optional) |
-| one line in `CLAUDE.md`                     | `@.claude/todo-flow/RULES.md` — the rules are always in context |
+| one line in `CLAUDE.md`                     | `@.claude/prompt-todo/RULES.md` — the rules are always in context |
 | one entry in `.claude/settings.json`        | the hook, merged next to whatever is already there            |
 | one line in `.gitignore`                    | the attachments directory                                     |
 

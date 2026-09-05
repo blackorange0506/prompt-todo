@@ -6,7 +6,7 @@
 # "works #39" — inject the tick + /todoIdealPrompt --replace instruction into the model's
 # context, so the step no longer depends on Claude re-reading the rules. Without an id the item
 # is the one most recently worked in the session; with one it is exactly that item, no guessing.
-# Any other prompt: no output, exit 0. The rule text in .claude/todo-flow/RULES.md stays the
+# Any other prompt: no output, exit 0. The rule text in .claude/prompt-todo/RULES.md stays the
 # source of truth; keep the two in agreement.
 #
 # Wired in .claude/settings.json (hooks.UserPromptSubmit) by install.sh. Pipe-test:
@@ -18,8 +18,8 @@
 set -u
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=../todo-flow/bin/config.sh
-. "$HERE/../todo-flow/bin/config.sh"
+# shellcheck source=../prompt-todo/bin/config.sh
+. "$HERE/../prompt-todo/bin/config.sh"
 
 input=$(cat)
 
@@ -47,7 +47,7 @@ prompt="${prompt%%+([[:space:]])}"
 
 # The project root: where the todo file and config.json live.
 if [ -n "$cwd" ] && [ -d "$cwd" ]; then cd "$cwd" 2>/dev/null || true; fi
-root="$(todo_flow_root)"
+root="$(prompt_todo_root)"
 cd "$root" 2>/dev/null || true
 
 # The confirm words, as one regex alternation. Regex metacharacters in a word are escaped.

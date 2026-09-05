@@ -1,6 +1,6 @@
 ---
 name: todoSetup
-description: "The configuration wizard for the todo flow: seven steps (todo file + title, tags, rules check, ticket tracker, app navigation, permissions, summary), each one skippable and re-runnable on its own, --yes takes every default. Edits .claude/todo-flow/config.json and re-renders .claude/todo-flow/RULES.md. Runs only when the user invokes it: '/todoSetup', '/todoSetup tags', '/todoSetup tracker', '/todoSetup --yes'."
+description: "The configuration wizard for Prompt TODO: seven steps (todo file + title, tags, rules check, ticket tracker, app navigation, permissions, summary), each one skippable and re-runnable on its own, --yes takes every default. Edits .claude/prompt-todo/config.json and re-renders .claude/prompt-todo/RULES.md. Runs only when the user invokes it: '/todoSetup', '/todoSetup tags', '/todoSetup tracker', '/todoSetup --yes'."
 argument-hint: "[todo|tags|rules|tracker|appNavigation|permissions|summary] [--yes]"
 disable-model-invocation: true
 allowed-tools: Read, Edit, Write, Glob, Grep, AskUserQuestion, Bash(git config:*), Bash(git rev-parse:*), Bash(python3:*), Bash(claude mcp:*), Bash(gh auth:*), Bash(gh issue:*), Bash(ls:*), Bash(command:*), Bash(bash .claude/hooks/todo-confirm.sh:*), Bash(echo:*), Bash(basename:*), mcp__atlassian__getJiraIssue
@@ -8,7 +8,7 @@ allowed-tools: Read, Edit, Write, Glob, Grep, AskUserQuestion, Bash(git config:*
 
 # /todoSetup
 
-Guided setup of the todo flow, run inside the project after `install.sh`. Nothing here is
+Guided setup of Prompt TODO, run inside the project after `install.sh`. Nothing here is
 required: the flow works with the defaults `install.sh` wrote. Each step explains why it
 exists, shows the current value, asks, and writes. The user can skip any step, and re-run any
 step later by name.
@@ -22,14 +22,14 @@ step later by name.
 
 ## Ground rules
 
-- **Config first.** Read `.claude/todo-flow/config.json` at the start (`Read` tool). Every
+- **Config first.** Read `.claude/prompt-todo/config.json` at the start (`Read` tool). Every
   step shows the current value as its default. If the file is missing, say `install.sh` has
   not been run here and stop.
 - **Ask with `AskUserQuestion`**, one question at a time, and **every question has a `Skip`
   option** (keeps the current value; acknowledge in one line: `Skipped — tags unchanged`).
   With `--yes`, ask nothing: take the default of every step and print one line per step.
 - **Write with the `Edit` tool**, never the shell, then re-render:
-  `python3 .claude/todo-flow/bin/render_rules.py`. Show its one-line output. If it fails,
+  `python3 .claude/prompt-todo/bin/render_rules.py`. Show its one-line output. If it fails,
   show the error and revert the edit.
 - Never touch the user's todo file except where a step says so (step 1 creates it; step 7's
   smoke test appends and removes one line, with permission).
@@ -99,10 +99,10 @@ list, a tag cannot be in both lists; `render_rules.py --check` says so too.
 
 No question. Do, and print a checklist with ✓/✗ per line:
 
-1. `python3 .claude/todo-flow/bin/render_rules.py` → `RULES.md` rendered.
-2. `CLAUDE.md` contains the line `@.claude/todo-flow/RULES.md` (Grep). Missing → offer to
+1. `python3 .claude/prompt-todo/bin/render_rules.py` → `RULES.md` rendered.
+2. `CLAUDE.md` contains the line `@.claude/prompt-todo/RULES.md` (Grep). Missing → offer to
    append it (Edit).
-3. `.claude/settings.json` has the hook: `python3 .claude/todo-flow/bin/merge_settings.py .claude/settings.json --check`.
+3. `.claude/settings.json` has the hook: `python3 .claude/prompt-todo/bin/merge_settings.py .claude/settings.json --check`.
    Missing → offer to run it without `--check`.
 4. `command -v jq` / `command -v python3` — which one the hook will use.
 5. Pipe-test: `echo '{"prompt":"works"}' | bash .claude/hooks/todo-confirm.sh` must print
@@ -208,7 +208,7 @@ Explain: the skills run `git config user.name` and the render script; allow rule
 `.claude/settings.local.json` (personal, not committed) spare a prompt on each.
 
 Propose the list, ask *Add* / *Skip*:
-- always: `Bash(git config user.name)`, `Bash(python3 .claude/todo-flow/bin/render_rules.py:*)`;
+- always: `Bash(git config user.name)`, `Bash(python3 .claude/prompt-todo/bin/render_rules.py:*)`;
 - with `tracker.kind = github`: `Bash(gh issue view:*)`, `Bash(gh issue list:*)`.
 
 Write with `Edit` (create the file with `{"permissions":{"allow":[…]}}` if missing; merge into
@@ -228,4 +228,4 @@ No question, unless the smoke test is offered. Print:
    remove that line again (Edit) and say the id is now taken — the next item gets the one
    after it, which is how ids are meant to behave.
 4. Next steps: `#new` an item and type its id; `/todoFromTicket <KEY>`; the human readme
-   `.claude/todo-flow/README.md`.
+   `.claude/prompt-todo/README.md`.

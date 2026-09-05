@@ -1,11 +1,11 @@
 # Todo workflow
 
-<!-- Generated from .claude/todo-flow/config.json by .claude/todo-flow/bin/render_rules.py.
+<!-- Generated from .claude/prompt-todo/config.json by .claude/prompt-todo/bin/render_rules.py.
      Do not edit by hand: change the config and re-run `/todoSetup rules`
-     (or `python3 .claude/todo-flow/bin/render_rules.py`). Rules that are specific to your
+     (or `python3 .claude/prompt-todo/bin/render_rules.py`). Rules that are specific to your
      project belong in your own CLAUDE.md, next to the line that imports this file. -->
 
-The human explanation of this flow is `.claude/todo-flow/README.md`; this file is the
+The human explanation of this flow is `.claude/prompt-todo/README.md`; this file is the
 executable version — the rules Claude follows. If the two disagree, this file wins and the
 readme needs fixing.
 
@@ -101,17 +101,17 @@ Headings and `> ` lines are never items. An indented `  - [ ] QA: …` sub-check
 item is the check the user performs by hand once the item is done: it is part of that item,
 ticked by the confirm trigger, and travels with the item through `--replace` and
 `/todoArchive`.
-<!-- todo-flow:tracker -->
+<!-- prompt-todo:tracker -->
 Tickets are GitHub Issues of `bestpizza/app`, read with the `gh` CLI; `/todoFromTicket <N>` writes a ticket block and saves the images linked from the issue under `tickets/<N>/`.
-<!-- /todo-flow:tracker -->
-<!-- todo-flow:appNavigation -->
+<!-- /prompt-todo:tracker -->
+<!-- prompt-todo:appNavigation -->
 No app-navigation skill is connected: when a ticket ends in a context block (the `Server:` / environment / screen lines a bug report carries), `/todoFromTicket` keeps those lines as plain sub-bullets of the first dev item. `/todoSetup appNavigation` connects a skill that opens the app at that screen.
-<!-- /todo-flow:appNavigation -->
+<!-- /prompt-todo:appNavigation -->
 
 **Tags.** An item may carry one tag right after its id (or after its ticket key, when it has
 one) — `- [ ] #19 IOS: description`:
 
-<!-- todo-flow:tags -->
+<!-- prompt-todo:tags -->
 | Tag           | Meaning                                                                                                |
 |---------------|--------------------------------------------------------------------------------------------------------|
 | `Android:`    | Android app only                                                                                       |
@@ -137,7 +137,7 @@ one) — `- [ ] #19 IOS: description`:
 | `Infra:`      | build, CI, tooling                                                                                     |
 | `QA:`         | the user's personal row — **Claude ignores it entirely**                                               |
 | `Admin:`      | the user's personal row — **Claude ignores it entirely**                                               |
-<!-- /todo-flow:tags -->
+<!-- /prompt-todo:tags -->
 
 Ignoring a `QA:`/`Admin:` row means: never work it, rewrite it, tag it, or check it off — if
 one is pasted as a prompt, say it's the user's own task and stop. That is about top-level rows.
@@ -174,5 +174,5 @@ sites. Never duplicates an item that already exists for the dialog, never commit
 the todo file and add markers in code by design.
 
 **/todoSetup.** The configuration wizard for this flow; runs only when the user invokes it.
-It edits `.claude/todo-flow/config.json` and re-renders this file. Never suggest editing this
+It edits `.claude/prompt-todo/config.json` and re-renders this file. Never suggest editing this
 file by hand.

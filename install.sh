@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
-# install.sh — install claude-todo-flow into a project.
+# install.sh — install prompt-todo into a project.
 #
-#   bash /path/to/claude-todo-flow/install.sh [--target DIR] [--without-app-navigation]
+#   bash /path/to/prompt-todo/install.sh [--target DIR] [--without-app-navigation]
 #                                             [--dry-run] [--force]
 #
 # Run it from inside the project (or name it with --target). Idempotent: re-running upgrades
@@ -12,9 +12,9 @@
 #   1. preflight: git repo (warning only), python3 (required), jq (optional)
 #   2. copies template/.claude/** into <target>/.claude/ (package files, always overwritten)
 #   3. adds the works/fixed hook to <target>/.claude/settings.json (merge, never overwrite)
-#   4. appends `@.claude/todo-flow/RULES.md` to <target>/CLAUDE.md (created if missing)
+#   4. appends `@.claude/prompt-todo/RULES.md` to <target>/CLAUDE.md (created if missing)
 #   5. adds the attachments directory to <target>/.gitignore
-#   6. writes .claude/todo-flow/config.json from the example if absent, renders RULES.md,
+#   6. writes .claude/prompt-todo/config.json from the example if absent, renders RULES.md,
 #      stamps VERSION and writes MANIFEST (the list uninstall.sh removes)
 #
 # bash 3.2 is enough (macOS /bin/bash).
@@ -28,9 +28,9 @@ WITH_APP_NAV=1
 DRY=0
 FORCE=0
 
-log()  { printf '\033[0;36m[todo-flow]\033[0m %s\n' "$*"; }
-warn() { printf '\033[0;33m[todo-flow WARN]\033[0m %s\n' "$*" >&2; }
-err()  { printf '\033[0;31m[todo-flow ERROR]\033[0m %s\n' "$*" >&2; exit 1; }
+log()  { printf '\033[0;36m[prompt-todo]\033[0m %s\n' "$*"; }
+warn() { printf '\033[0;33m[prompt-todo WARN]\033[0m %s\n' "$*" >&2; }
+err()  { printf '\033[0;31m[prompt-todo ERROR]\033[0m %s\n' "$*" >&2; exit 1; }
 dry()  { printf '\033[0;35m[dry-run]\033[0m %s\n' "$*"; }
 
 usage() {
@@ -50,10 +50,10 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-[ -d "$TEMPLATE" ] || err "template not found at $TEMPLATE — run this script from a claude-todo-flow checkout"
+[ -d "$TEMPLATE" ] || err "template not found at $TEMPLATE — run this script from a prompt-todo checkout"
 [ -d "$TARGET" ] || err "target is not a directory: $TARGET"
 TARGET="$(cd "$TARGET" && pwd)"
-[ "$TARGET" != "$SRC" ] || err "the target is the claude-todo-flow checkout itself; run from your project (or pass --target)"
+[ "$TARGET" != "$SRC" ] || err "the target is the prompt-todo checkout itself; run from your project (or pass --target)"
 
 # ---- 1. preflight -----------------------------------------------------------
 
@@ -68,12 +68,12 @@ else
   warn "$TARGET is not a git repository; the todo file name will fall back to \$USER until it is one"
 fi
 
-log "installing claude-todo-flow $(cat "$SRC/VERSION") into $TARGET"
+log "installing prompt-todo $(cat "$SRC/VERSION") into $TARGET"
 [ "$JQ" = 1 ] || log "jq not found; the hook and the skills will use python3 instead (fine)"
 
 # ---- 2. copy the package files ---------------------------------------------
 
-MANIFEST_TMP="$(mktemp "${TMPDIR:-/tmp}/todo-flow-manifest.XXXXXX")"
+MANIFEST_TMP="$(mktemp "${TMPDIR:-/tmp}/prompt-todo-manifest.XXXXXX")"
 trap 'rm -f "$MANIFEST_TMP"' EXIT
 
 copy_one() {
@@ -102,8 +102,8 @@ copy_one() {
 done
 [ "$DRY" = 1 ] || log "package files copied to .claude/ ($(wc -l < "$MANIFEST_TMP" | tr -d ' ') files)"
 
-FLOW="$TARGET/.claude/todo-flow"
-BIN="$TEMPLATE/todo-flow/bin"   # the copy in the target may not exist on --dry-run
+FLOW="$TARGET/.claude/prompt-todo"
+BIN="$TEMPLATE/prompt-todo/bin"   # the copy in the target may not exist on --dry-run
 
 # ---- 3. hook in settings.json ---------------------------------------------------
 
@@ -119,7 +119,7 @@ fi
 # ---- 4. CLAUDE.md import --------------------------------------------------------
 
 CLAUDE_MD="$TARGET/CLAUDE.md"
-IMPORT='@.claude/todo-flow/RULES.md'
+IMPORT='@.claude/prompt-todo/RULES.md'
 if [ -f "$CLAUDE_MD" ] && grep -qF "$IMPORT" "$CLAUDE_MD"; then
   log "CLAUDE.md already imports the rules"
 elif [ "$DRY" = 1 ]; then
@@ -128,9 +128,9 @@ else
   if [ -f "$CLAUDE_MD" ]; then
     # keep a trailing newline before the import line
     [ -z "$(tail -c 1 "$CLAUDE_MD")" ] || printf '\n' >> "$CLAUDE_MD"
-    printf '\n# Todo workflow (claude-todo-flow)\n%s\n' "$IMPORT" >> "$CLAUDE_MD"
+    printf '\n# Prompt TODO\n%s\n' "$IMPORT" >> "$CLAUDE_MD"
   else
-    printf '# Project notes for Claude\n\n# Todo workflow (claude-todo-flow)\n%s\n' "$IMPORT" > "$CLAUDE_MD"
+    printf '# Project notes for Claude\n\n# Prompt TODO\n%s\n' "$IMPORT" > "$CLAUDE_MD"
   fi
   log "CLAUDE.md imports $IMPORT"
 fi
@@ -159,11 +159,11 @@ ensure_ignored "${ATTACH_DIR%/}/"
 
 if [ "$DRY" = 1 ]; then
   if [ -f "$FLOW/config.json" ]; then
-    [ "$FORCE" = 1 ] && dry "reset .claude/todo-flow/config.json from the example (backup: config.json.bak)"
+    [ "$FORCE" = 1 ] && dry "reset .claude/prompt-todo/config.json from the example (backup: config.json.bak)"
   else
-    dry "write .claude/todo-flow/config.json from the example (default tag table, no tracker)"
+    dry "write .claude/prompt-todo/config.json from the example (default tag table, no tracker)"
   fi
-  dry "render .claude/todo-flow/RULES.md, write VERSION and MANIFEST"
+  dry "render .claude/prompt-todo/RULES.md, write VERSION and MANIFEST"
   log "dry run finished; nothing was written"
   exit 0
 fi
@@ -180,13 +180,13 @@ python3 "$FLOW/bin/render_rules.py" --check >/dev/null || err "config.json is in
 python3 "$FLOW/bin/render_rules.py" >/dev/null
 cp "$SRC/VERSION" "$FLOW/VERSION"
 LC_ALL=C sort -u "$MANIFEST_TMP" > "$FLOW/MANIFEST"
-log "rules rendered to .claude/todo-flow/RULES.md"
+log "rules rendered to .claude/prompt-todo/RULES.md"
 
 cat <<DONE
 
-Installed claude-todo-flow $(cat "$SRC/VERSION") in $TARGET
-  rules:    .claude/todo-flow/RULES.md   (imported from CLAUDE.md)
-  config:   .claude/todo-flow/config.json
+Installed prompt-todo $(cat "$SRC/VERSION") in $TARGET
+  rules:    .claude/prompt-todo/RULES.md   (imported from CLAUDE.md)
+  config:   .claude/prompt-todo/config.json
   skills:   /todoSetup /todoFromTicket /todoIdealPrompt /todoIdealize /todoNumber /todoReverse /todoArchive$([ "$WITH_APP_NAV" = 1 ] && printf ' /appNavigation (placeholder)')
 
 Next: open Claude Code in $TARGET and run  /todoSetup

@@ -7,7 +7,7 @@ allowed-tools: Read, Edit, Glob, Grep, Bash(git config:*)
 
 # /todoNumber
 
-The on-demand form of the **Autoincrement** rule in `.claude/todo-flow/RULES.md`: give every
+The on-demand form of the **Autoincrement** rule in `.claude/prompt-todo/RULES.md`: give every
 placeholder item in the user's todo file its id, report the mapping, and stop. Nothing is
 worked, ticked or rewritten.
 

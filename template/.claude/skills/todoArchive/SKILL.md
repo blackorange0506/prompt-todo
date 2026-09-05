@@ -9,7 +9,7 @@ allowed-tools: Read, Edit, Write, Glob, Grep, Bash(git config:*), Bash(python3:*
 
 Clears finished prompts out of the user's todo file without losing them: they move to the
 archive file. "Remove" never means delete — the **Ids** rule in the todo rules
-(`.claude/todo-flow/RULES.md`) derives the next id from the highest id across the todo file
+(`.claude/prompt-todo/RULES.md`) derives the next id from the highest id across the todo file
 *and* its archive, so an archived item still pins its number. The archive is the history; git
 records the move whenever the user next commits, so this skill neither checks git state nor
 commits anything.
@@ -28,7 +28,7 @@ commits anything.
 3. **Move**: append the collected items, in file order and verbatim, to
    `TODO.<name>.archive.md` — create it with the header `# <projectTitle> — TODO archive` if it
    does not exist, where `<projectTitle>` is the `projectTitle` in
-   `.claude/todo-flow/config.json` (the same title the todo file's header uses) — then delete
+   `.claude/prompt-todo/config.json` (the same title the todo file's header uses) — then delete
    those lines from the todo file. Open items and the header stay exactly where they are. A
    `## KEY — …` ticket heading (and its `> ` excerpt line) is copied to the archive the first
    time one of its items moves, and removed from the todo file once no item is left under it.

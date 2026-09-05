@@ -14,7 +14,7 @@ by one with `#N`. The output is prompts, nothing else — no work is started. Th
 
 ## Configuration
 
-Read once per run from `.claude/todo-flow/config.json`:
+Read once per run from `.claude/prompt-todo/config.json`:
 
 | key                    | use                                                                 |
 |------------------------|---------------------------------------------------------------------|
@@ -62,7 +62,7 @@ Read once per run from `.claude/todo-flow/config.json`:
    and log attachments if they change what the prompts should say.
 
 4. **Resolve the user's todo file** — `TODO.<name>.md`, `<name>` from `git config user.name`
-   (the rule in `.claude/todo-flow/RULES.md`). Run Autoincrement first, as on any touch. Edit
+   (the rule in `.claude/prompt-todo/RULES.md`). Run Autoincrement first, as on any touch. Edit
    tool only.
 
 5. **Draft the prompts.** From the description and attachments, write 1–5 items, each the

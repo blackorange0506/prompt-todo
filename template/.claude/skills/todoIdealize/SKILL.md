@@ -13,7 +13,7 @@ turns the session's finished work into prompt-history the user can learn from.
 ## What Claude does
 
 1. **Resolve and read the user's todo file** — `TODO.<name>.md` at the repo root, `<name>`
-   from `git config user.name` (the rule in `.claude/todo-flow/RULES.md`). Never another
+   from `git config user.name` (the rule in `.claude/prompt-todo/RULES.md`). Never another
    user's file. Run the Autoincrement rule first, as on any touch. Edit it with the Edit tool
    only.
 

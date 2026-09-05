@@ -19,7 +19,7 @@ jobs:
       - name: shellcheck
         run: bash scripts/lint.sh
       - name: docs in sync
-        run: diff -u template/.claude/todo-flow/README.md docs/todo-workflow.md
+        run: diff -u template/.claude/prompt-todo/README.md docs/todo-workflow.md
       - name: tests (system bash)
         run: bash tests/run.sh
       - name: tests (/bin/bash 3.2 on macOS)

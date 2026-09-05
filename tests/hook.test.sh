@@ -5,10 +5,10 @@ HOOK="$ROOT/template/.claude/hooks/todo-confirm.sh"
 
 D="$(new_tmp hook)"
 ( cd "$D" && git init -q && git config user.name jd )
-mkdir -p "$D/.claude/todo-flow/bin" "$D/.claude/hooks"
-cp "$ROOT/template/.claude/todo-flow/bin/config.sh" "$D/.claude/todo-flow/bin/"
+mkdir -p "$D/.claude/prompt-todo/bin" "$D/.claude/hooks"
+cp "$ROOT/template/.claude/prompt-todo/bin/config.sh" "$D/.claude/prompt-todo/bin/"
 cp "$HOOK" "$D/.claude/hooks/"
-cp "$ROOT/template/.claude/todo-flow/config.example.json" "$D/.claude/todo-flow/config.json"
+cp "$ROOT/template/.claude/prompt-todo/config.example.json" "$D/.claude/prompt-todo/config.json"
 printf '# My App — TODO\n\n- [ ] #12 Something\n' > "$D/TODO.jd.md"
 
 run_hook() { # prompt [cwd]
@@ -49,7 +49,7 @@ assert_contains "missing file note"          "$out" 'does not exist'
 printf '# My App — TODO\n' > "$D/TODO.jd.md"
 
 # custom confirm words + no ignore tags
-python3 - "$D/.claude/todo-flow/config.json" <<'PY'
+python3 - "$D/.claude/prompt-todo/config.json" <<'PY'
 import json,sys
 p=sys.argv[1]; c=json.load(open(p)); c["confirmWords"]=["done","ship it"]; c["tags"]["ignore"]=[]; json.dump(c,open(p,"w"))
 PY
@@ -60,7 +60,7 @@ out="$(run_hook 'works')"
 assert_eq "default word gone when configured" "" "$out"
 
 # missing config → defaults
-rm "$D/.claude/todo-flow/config.json"
+rm "$D/.claude/prompt-todo/config.json"
 out="$(run_hook 'fixed')"
 assert_contains "no config → default words"  "$out" 'TODO CONFIRM TRIGGER'
 

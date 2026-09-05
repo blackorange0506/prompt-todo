@@ -11,9 +11,9 @@ step shows the current value, offers **Skip**, and can be run again later on its
 /todoSetup tracker --yes   one step, its default
 ```
 
-Everything the wizard writes goes to `.claude/todo-flow/config.json`; after each change it
-re-renders `.claude/todo-flow/RULES.md`, the file Claude actually follows. You can also edit
-the config by hand and run `python3 .claude/todo-flow/bin/render_rules.py` yourself.
+Everything the wizard writes goes to `.claude/prompt-todo/config.json`; after each change it
+re-renders `.claude/prompt-todo/RULES.md`, the file Claude actually follows. You can also edit
+the config by hand and run `python3 .claude/prompt-todo/bin/render_rules.py` yourself.
 
 | # | step            | asks                                                                 | writes                                   | skipped means                                                |
 |---|-----------------|----------------------------------------------------------------------|------------------------------------------|--------------------------------------------------------------|
@@ -89,6 +89,6 @@ allowed (the wizard says so), so the rules and `/todoFromTicket` already produce
 
 ## Team use
 
-Commit `.claude/todo-flow/config.json`, `RULES.md`, the skills and the hook. A teammate who
+Commit `.claude/prompt-todo/config.json`, `RULES.md`, the skills and the hook. A teammate who
 clones the project gets the same flow; they run `/todoSetup todo` once for their own todo
 file, and `/todoSetup permissions` if they want the allow rules (that file is personal).

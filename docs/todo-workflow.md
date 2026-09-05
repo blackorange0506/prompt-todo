@@ -1,4 +1,4 @@
-# Smart TODO
+# Prompt TODO
 
 ## 1. Summary
 
@@ -209,13 +209,13 @@ never depends on Claude remembering the rule.
 |----------------------------|----------------------------------------------------------|
 | Your items                 | `TODO.<name>.md`                                         |
 | Archived done items        | `TODO.<name>.archive.md`                                 |
-| The rules Claude executes  | `.claude/todo-flow/RULES.md` (generated; imported by `CLAUDE.md`) |
-| The configuration          | `.claude/todo-flow/config.json` (edit with `/todoSetup`) |
+| The rules Claude executes  | `.claude/prompt-todo/RULES.md` (generated; imported by `CLAUDE.md`) |
+| The configuration          | `.claude/prompt-todo/config.json` (edit with `/todoSetup`) |
 | The skills                 | `.claude/skills/todo*`, `.claude/skills/appNavigation`   |
 | The `works` / `fixed` hook | `.claude/hooks/todo-confirm.sh`, `.claude/settings.json` |
 | Ticket attachments         | `todoAttachments/<KEY>/` (gitignored)                    |
 
-`.claude/todo-flow/RULES.md` holds the exact rules Claude follows, generated from
+`.claude/prompt-todo/RULES.md` holds the exact rules Claude follows, generated from
 `config.json`; this file explains them for people. When the two disagree, the rules file wins.
 Commit `config.json`, the skills, the hook and `RULES.md` with the project so the whole team
 shares one flow; only `credentials.json` and the attachments directory stay out of git.

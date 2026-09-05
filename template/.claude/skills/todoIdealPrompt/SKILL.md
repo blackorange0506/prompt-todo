@@ -24,7 +24,7 @@ way next time.
 ## What Claude does
 
 1. **Resolve the task.** `#N` names an item in the user's todo file (`TODO.<name>.md`,
-   `<name>` from `git config user.name` — the rule in `.claude/todo-flow/RULES.md`); without
+   `<name>` from `git config user.name` — the rule in `.claude/prompt-todo/RULES.md`); without
    it, take the task most recently confirmed fixed in this session. If the item was never
    discussed here (or several tasks are plausible), ask with `AskUserQuestion` — at most 3
    candidates. Prefer a task the user has actually confirmed ("works", "ok") over one still in

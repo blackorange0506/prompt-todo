@@ -1,6 +1,6 @@
 ---
 name: todoReverse
-description: "The reverse of the normal todo flow: turn a piece of work that was done straight through the terminal WITHOUT a todo item — a hotfix, a quick 'fix this' with its corrections — into an item in the user's todo file (TODO.<git user.name>.md, resolved as in the todo rules) after the fact. Distills that dialog into its ideal prompt (same rules as /todoIdealPrompt), appends it with the next id as a done `- [x] #N` item (or open with --open), and adds the `[<name>#N]` markers at the change sites of that dialog so the code can be traced back to it. Use when the user wants an untracked dialog recorded in the todo — phrases like '/todoReverse', 'make a todo item from what we just did', 'record this hotfix in the todo', 'reverse prompt', 'add what we just fixed to my todo', 'create the prompt for this fix'. This skill IS allowed to edit the user's todo file and to add markers in the code changed by that dialog; that is its purpose."
+description: "The reverse of the normal flow: turn a piece of work that was done straight through the terminal WITHOUT a todo item — a hotfix, a quick 'fix this' with its corrections — into an item in the user's todo file (TODO.<git user.name>.md, resolved as in the todo rules) after the fact. Distills that dialog into its ideal prompt (same rules as /todoIdealPrompt), appends it with the next id as a done `- [x] #N` item (or open with --open), and adds the `[<name>#N]` markers at the change sites of that dialog so the code can be traced back to it. Use when the user wants an untracked dialog recorded in the todo — phrases like '/todoReverse', 'make a todo item from what we just did', 'record this hotfix in the todo', 'reverse prompt', 'add what we just fixed to my todo', 'create the prompt for this fix'. This skill IS allowed to edit the user's todo file and to add markers in the code changed by that dialog; that is its purpose."
 argument-hint: "[words identifying the dialog] [--open]"
 allowed-tools: Read, Edit, Glob, Grep, Bash(git config:*), Bash(git status:*), Bash(git diff:*), Bash(git log:*)
 ---
@@ -36,7 +36,7 @@ usual way.
    because the user typed a `#N` for it midway), say which and stop: never a duplicate.
 
 2. **Resolve and read the user's todo file** — `TODO.<name>.md` at the repo root, `<name>` from
-   `git config user.name` (the rule in `.claude/todo-flow/RULES.md`). Never another user's
+   `git config user.name` (the rule in `.claude/prompt-todo/RULES.md`). Never another user's
    file. Run the Autoincrement rule first, as on any touch. Next id = highest `#N` across the
    file and `TODO.<name>.archive.md` (if present), plus one. Edit tool only, never the shell.
 

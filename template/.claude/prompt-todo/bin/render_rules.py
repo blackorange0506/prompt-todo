@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render .claude/todo-flow/RULES.md from config.json and RULES.template.md.
+"""Render .claude/prompt-todo/RULES.md from config.json and RULES.template.md.
 
 Usage:
   render_rules.py                       # config.json + RULES.template.md → RULES.md, next to this script
@@ -9,7 +9,7 @@ Usage:
 
 Placeholders in the template: {{projectTitle}}, {{userExample}}, {{ticketExample}},
 {{confirmWords}}, {{confirmFirst}}, {{ignoreRows}}.
-Generated blocks: <!-- todo-flow:NAME --> … <!-- /todo-flow:NAME --> for NAME in
+Generated blocks: <!-- prompt-todo:NAME --> … <!-- /prompt-todo:NAME --> for NAME in
 tags, tracker, appNavigation. Whatever sits between the markers is replaced.
 """
 import argparse
@@ -185,11 +185,11 @@ def render(cfg, template):
         fail("unknown placeholder(s) in template: %s" % ", ".join(sorted(set(leftover))))
     blocks = {"tags": tags_block, "tracker": tracker_block, "appNavigation": app_nav_block}
     for name, fn in blocks.items():
-        pat = re.compile(r"<!-- todo-flow:%s -->\n.*?<!-- /todo-flow:%s -->" % (name, name), re.S)
+        pat = re.compile(r"<!-- prompt-todo:%s -->\n.*?<!-- /prompt-todo:%s -->" % (name, name), re.S)
         if not pat.search(out):
-            fail("template has no <!-- todo-flow:%s --> block" % name)
+            fail("template has no <!-- prompt-todo:%s --> block" % name)
         body = fn(cfg)
-        out = pat.sub(lambda m: "<!-- todo-flow:%s -->\n%s<!-- /todo-flow:%s -->" % (name, body, name), out, count=1)
+        out = pat.sub(lambda m: "<!-- prompt-todo:%s -->\n%s<!-- /prompt-todo:%s -->" % (name, body, name), out, count=1)
     return out
 
 

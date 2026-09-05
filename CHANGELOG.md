@@ -2,7 +2,7 @@
 
 ## 0.1.0 — 2026-09-06
 
-First public version.
+First public version, as Prompt TODO (`prompt-todo`).
 
 - Todo core: per-user `TODO.<name>.md`, ids that are never reused, `#new` autoincrement,
   `#wait` / `#go`, the confirm-word hook (`works` / `fixed` → tick + `/todoIdealPrompt --replace`),

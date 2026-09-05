@@ -2,9 +2,9 @@
 #
 # uninstall.sh — remove what install.sh added to a project.
 #
-#   bash /path/to/claude-todo-flow/uninstall.sh [--target DIR] [--keep-config] [--dry-run]
+#   bash /path/to/prompt-todo/uninstall.sh [--target DIR] [--keep-config] [--dry-run]
 #
-# Removes the package files listed in .claude/todo-flow/MANIFEST, the hook entry in
+# Removes the package files listed in .claude/prompt-todo/MANIFEST, the hook entry in
 # .claude/settings.json, the import line in CLAUDE.md and the .gitignore entries. Keeps every
 # TODO.*.md file, the attachments directory and — with --keep-config — config.json.
 # Files you added under .claude/skills/appNavigation are never deleted; if any exist the
@@ -16,9 +16,9 @@ TARGET="$(pwd)"
 KEEP_CONFIG=0
 DRY=0
 
-log()  { printf '\033[0;36m[todo-flow]\033[0m %s\n' "$*"; }
-warn() { printf '\033[0;33m[todo-flow WARN]\033[0m %s\n' "$*" >&2; }
-err()  { printf '\033[0;31m[todo-flow ERROR]\033[0m %s\n' "$*" >&2; exit 1; }
+log()  { printf '\033[0;36m[prompt-todo]\033[0m %s\n' "$*"; }
+warn() { printf '\033[0;33m[prompt-todo WARN]\033[0m %s\n' "$*" >&2; }
+err()  { printf '\033[0;31m[prompt-todo ERROR]\033[0m %s\n' "$*" >&2; exit 1; }
 dry()  { printf '\033[0;35m[dry-run]\033[0m %s\n' "$*"; }
 
 while [ $# -gt 0 ]; do
@@ -33,8 +33,8 @@ while [ $# -gt 0 ]; do
 done
 
 TARGET="$(cd "$TARGET" && pwd)"
-FLOW="$TARGET/.claude/todo-flow"
-[ -f "$FLOW/MANIFEST" ] || err "no .claude/todo-flow/MANIFEST in $TARGET — nothing installed here (or an older install; delete .claude/todo-flow, .claude/hooks/todo-confirm.sh and .claude/skills/todo* by hand)"
+FLOW="$TARGET/.claude/prompt-todo"
+[ -f "$FLOW/MANIFEST" ] || err "no .claude/prompt-todo/MANIFEST in $TARGET — nothing installed here (or an older install; delete .claude/prompt-todo, .claude/hooks/todo-confirm.sh and .claude/skills/todo* by hand)"
 
 rm_file() {
   local f="$TARGET/$1"
@@ -52,23 +52,23 @@ while IFS= read -r rel; do
   [ -n "$rel" ] || continue
   rm_file "$rel"
 done < "$FLOW/MANIFEST"
-for extra in .claude/todo-flow/RULES.md .claude/todo-flow/VERSION .claude/todo-flow/MANIFEST .claude/todo-flow/config.json.bak; do
+for extra in .claude/prompt-todo/RULES.md .claude/prompt-todo/VERSION .claude/prompt-todo/MANIFEST .claude/prompt-todo/config.json.bak; do
   rm_file "$extra"
 done
 if [ "$KEEP_CONFIG" = 1 ]; then
-  log "keeping .claude/todo-flow/config.json"
+  log "keeping .claude/prompt-todo/config.json"
 else
-  rm_file .claude/todo-flow/config.json
+  rm_file .claude/prompt-todo/config.json
 fi
 
 CLAUDE_MD="$TARGET/CLAUDE.md"
-if [ -f "$CLAUDE_MD" ] && grep -qF '@.claude/todo-flow/RULES.md' "$CLAUDE_MD"; then
+if [ -f "$CLAUDE_MD" ] && grep -qF '@.claude/prompt-todo/RULES.md' "$CLAUDE_MD"; then
   if [ "$DRY" = 1 ]; then dry "remove the import line from CLAUDE.md"; else
     python3 - "$CLAUDE_MD" <<'PY'
 import sys
 p = sys.argv[1]
 lines = open(p, encoding="utf-8").read().split("\n")
-out = [l for l in lines if l.strip() not in ("@.claude/todo-flow/RULES.md", "# Todo workflow (claude-todo-flow)")]
+out = [l for l in lines if l.strip() not in ("@.claude/prompt-todo/RULES.md", "# Prompt TODO")]
 open(p, "w", encoding="utf-8").write("\n".join(out))
 PY
     log "CLAUDE.md: import line removed"
@@ -81,7 +81,7 @@ fi
 # Empty directories left behind.
 if [ "$DRY" = 0 ]; then
   for d in .claude/skills/todoSetup .claude/skills/todoArchive .claude/skills/todoFromTicket .claude/skills/todoIdealPrompt \
-           .claude/skills/todoIdealize .claude/skills/todoNumber .claude/skills/todoReverse .claude/todo-flow/bin .claude/todo-flow .claude/hooks; do
+           .claude/skills/todoIdealize .claude/skills/todoNumber .claude/skills/todoReverse .claude/prompt-todo/bin .claude/prompt-todo .claude/hooks .claude/skills/appNavigation .claude/skills; do
     [ -d "$TARGET/$d" ] && rmdir "$TARGET/$d" 2>/dev/null || true
   done
   APP="$TARGET/.claude/skills/appNavigation"
@@ -92,4 +92,4 @@ if [ "$DRY" = 0 ]; then
     fi
   fi
 fi
-log "claude-todo-flow removed from $TARGET (TODO.*.md files untouched)"
+log "prompt-todo removed from $TARGET (TODO.*.md files untouched)"

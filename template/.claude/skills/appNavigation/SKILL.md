@@ -16,7 +16,7 @@ Take a locator and end with the app open at that place, ready for the check a to
 for:
 
 - **Input** — a ticket key or URL (read through the tracker configured in
-  `.claude/todo-flow/config.json`), free spec text, or a todo item whose text is
+  `.claude/prompt-todo/config.json`), free spec text, or a todo item whose text is
   `/appNavigation` with the spec as sub-bullets. `/todoFromTicket` writes such an item from
   the context block at the end of a bug report: `Server:`, `App version:`, then the lines that
   name where in the app the bug lives (for a pizza-ordering app: `Restaurant:`, `Pizza:`,

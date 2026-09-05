@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # config → RULES.md snapshots. UPDATE_SNAPSHOTS=1 rewrites tests/fixtures/render/*.md.
 . "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
-RENDER="$ROOT/template/.claude/todo-flow/bin/render_rules.py"
-TPL="$ROOT/template/.claude/todo-flow/RULES.template.md"
+RENDER="$ROOT/template/.claude/prompt-todo/bin/render_rules.py"
+TPL="$ROOT/template/.claude/prompt-todo/RULES.template.md"
 FX="$ROOT/tests/fixtures/render"
 D="$(new_tmp render)"
 
 mk() { # name python-expression-over-c
-  python3 - "$ROOT/template/.claude/todo-flow/config.example.json" "$D/$1.json" "$2" <<'PY'
+  python3 - "$ROOT/template/.claude/prompt-todo/config.example.json" "$D/$1.json" "$2" <<'PY'
 import json,sys
 c=json.load(open(sys.argv[1])); exec(sys.argv[3]); json.dump(c,open(sys.argv[2],"w"),indent=1)
 PY
