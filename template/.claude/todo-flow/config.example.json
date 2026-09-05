@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "projectTitle": "My App",
+  "tags": {
+    "default": "All",
+    "list": [
+      {"tag": "Android",  "meaning": "Android only"},
+      {"tag": "IOS",      "meaning": "iOS only"},
+      {"tag": "Frontend", "meaning": "web frontend only"},
+      {"tag": "Backend",  "meaning": "backend / API only"},
+      {"tag": "All",      "meaning": "every platform"},
+      {"tag": "IOS+",     "meaning": "seen on iOS, almost certainly elsewhere too: fix all, verify iOS first"},
+      {"tag": "Android+", "meaning": "seen on Android, almost certainly elsewhere too: fix all, verify Android first"},
+      {"tag": "Bug",      "meaning": "defect fix"},
+      {"tag": "Feature",  "meaning": "new behaviour"},
+      {"tag": "Refactor", "meaning": "no behaviour change"},
+      {"tag": "Docs",     "meaning": "documentation only"},
+      {"tag": "Infra",    "meaning": "build, CI, tooling"}
+    ],
+    "ignore": ["QA", "Admin"]
+  },
+  "confirmWords": ["works", "fixed", "works, fixed"],
+  "tracker": {
+    "kind": "none",
+    "jira": {"host": "yourcompany.atlassian.net", "projectKeys": ["PROJ"]},
+    "github": {"repo": "owner/repo"}
+  },
+  "attachmentsDir": "todoAttachments",
+  "appNavigation": {"mode": "none", "skill": "appNavigation"}
+}

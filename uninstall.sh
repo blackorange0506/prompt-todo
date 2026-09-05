@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+#
+# uninstall.sh — remove what install.sh added to a project.
+#
+#   bash /path/to/claude-todo-flow/uninstall.sh [--target DIR] [--keep-config] [--dry-run]
+#
+# Removes the package files listed in .claude/todo-flow/MANIFEST, the hook entry in
+# .claude/settings.json, the import line in CLAUDE.md and the .gitignore entries. Keeps every
+# TODO.*.md file, the attachments directory and — with --keep-config — config.json.
+# .claude/skills/appNavigation/app.json and credentials.json are never deleted; if they exist
+# the directory is left in place and you are told.
+
+set -eu
+
+TARGET="$(pwd)"
+KEEP_CONFIG=0
+DRY=0
+
+log()  { printf '\033[0;36m[todo-flow]\033[0m %s\n' "$*"; }
+warn() { printf '\033[0;33m[todo-flow WARN]\033[0m %s\n' "$*" >&2; }
+err()  { printf '\033[0;31m[todo-flow ERROR]\033[0m %s\n' "$*" >&2; exit 1; }
+dry()  { printf '\033[0;35m[dry-run]\033[0m %s\n' "$*"; }
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --target) [ $# -ge 2 ] || err "--target needs a directory"; TARGET="$2"; shift 2 ;;
+    --target=*) TARGET="${1#--target=}"; shift ;;
+    --keep-config) KEEP_CONFIG=1; shift ;;
+    --dry-run) DRY=1; shift ;;
+    -h|--help) sed -n '2,/^$/p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    *) err "unknown argument: $1" ;;
+  esac
+done
+
+TARGET="$(cd "$TARGET" && pwd)"
+FLOW="$TARGET/.claude/todo-flow"
+[ -f "$FLOW/MANIFEST" ] || err "no .claude/todo-flow/MANIFEST in $TARGET — nothing installed here (or an older install; delete .claude/todo-flow, .claude/hooks/todo-confirm.sh and .claude/skills/todo* by hand)"
+
+rm_file() {
+  local f="$TARGET/$1"
+  [ -e "$f" ] || return 0
+  if [ "$DRY" = 1 ]; then dry "rm $1"; else rm -f "$f"; fi
+}
+
+# The hook first, while merge_settings.py is still there.
+SETTINGS="$TARGET/.claude/settings.json"
+if [ -f "$SETTINGS" ] && python3 "$FLOW/bin/merge_settings.py" "$SETTINGS" --check 2>/dev/null; then
+  if [ "$DRY" = 1 ]; then dry "remove the hook from .claude/settings.json"; else python3 "$FLOW/bin/merge_settings.py" "$SETTINGS" --remove; fi
+fi
+
+while IFS= read -r rel; do
+  [ -n "$rel" ] || continue
+  rm_file "$rel"
+done < "$FLOW/MANIFEST"
+for extra in .claude/todo-flow/RULES.md .claude/todo-flow/VERSION .claude/todo-flow/MANIFEST .claude/todo-flow/config.json.bak; do
+  rm_file "$extra"
+done
+if [ "$KEEP_CONFIG" = 1 ]; then
+  log "keeping .claude/todo-flow/config.json"
+else
+  rm_file .claude/todo-flow/config.json
+fi
+
+CLAUDE_MD="$TARGET/CLAUDE.md"
+if [ -f "$CLAUDE_MD" ] && grep -qF '@.claude/todo-flow/RULES.md' "$CLAUDE_MD"; then
+  if [ "$DRY" = 1 ]; then dry "remove the import line from CLAUDE.md"; else
+    python3 - "$CLAUDE_MD" <<'PY'
+import sys
+p = sys.argv[1]
+lines = open(p, encoding="utf-8").read().split("\n")
+out = [l for l in lines if l.strip() not in ("@.claude/todo-flow/RULES.md", "# Todo workflow (claude-todo-flow)")]
+open(p, "w", encoding="utf-8").write("\n".join(out))
+PY
+    log "CLAUDE.md: import line removed"
+  fi
+fi
+
+GITIGNORE="$TARGET/.gitignore"
+if [ -f "$GITIGNORE" ]; then
+  if grep -qxF '.claude/skills/appNavigation/credentials.json' "$GITIGNORE"; then
+    if [ "$DRY" = 1 ]; then dry "remove the credentials entry from .gitignore"; else
+      grep -vxF '.claude/skills/appNavigation/credentials.json' "$GITIGNORE" > "$GITIGNORE.tmp" && mv "$GITIGNORE.tmp" "$GITIGNORE"
+    fi
+  fi
+  # the attachments entry stays: the directory may hold downloaded files the user wants kept out of git
+fi
+
+# Empty directories left behind.
+if [ "$DRY" = 0 ]; then
+  for d in .claude/skills/todoSetup .claude/skills/todoArchive .claude/skills/todoFromTicket .claude/skills/todoIdealPrompt \
+           .claude/skills/todoIdealize .claude/skills/todoNumber .claude/skills/todoReverse .claude/todo-flow/bin .claude/todo-flow .claude/hooks; do
+    [ -d "$TARGET/$d" ] && rmdir "$TARGET/$d" 2>/dev/null || true
+  done
+  APP="$TARGET/.claude/skills/appNavigation"
+  if [ -d "$APP" ]; then
+    find "$APP" -type d -empty -delete 2>/dev/null || true
+    if [ -d "$APP" ]; then
+      warn "kept $APP — it still holds your own files ($(cd "$APP" && find . -type f | sed 's|^\./||' | tr '\n' ' '))"
+    fi
+  fi
+fi
+log "claude-todo-flow removed from $TARGET (TODO.*.md files untouched)"
