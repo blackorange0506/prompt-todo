@@ -1,0 +1,8 @@
+## DEBUG / CONTEXT BLOCK
+Some prose the ticket carries: reproduced on stage twice.
+- Server: staging
+- **App version:** 2.4.1(240)
+- Restaurant: 17 | Name : Downtown | Downtown Branch
+- Pizza: Margherita
+* Topping: Extra : Olives
+Unknown: ignored because app.json does not know it

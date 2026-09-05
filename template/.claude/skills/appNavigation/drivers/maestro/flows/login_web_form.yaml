@@ -1,0 +1,74 @@
+# Login through an HTML form shown in a web view or custom tab (an OAuth / SSO page).
+# Skipped by navigate when the app is already past the login (READY_SEL visible).
+#
+# Env (set by the driver from app.json + credentials.json):
+#   APP_ID         package / bundle id
+#   LOGIN_BUTTON   id of the button that opens the form ("" when the app starts on the form)
+#   USERNAME_SEL   id of the username input   (HTML id attribute)
+#   PASSWORD_SEL   id of the password input
+#   SUBMIT_SEL     id of the submit button    ("" → submit with Enter)
+#   READY_SEL      id visible once logged in
+#   USERNAME / PASSWORD
+appId: ${APP_ID}
+---
+- extendedWaitUntil:
+    visible:
+      id: "${LOGIN_BUTTON != '' ? LOGIN_BUTTON + '|' : ''}${USERNAME_SEL}|${READY_SEL}"
+    timeout: 60000
+
+- runFlow:
+    when:
+      notVisible:
+        id: "${READY_SEL}"
+    commands:
+      - runFlow:
+          when:
+            true: ${LOGIN_BUTTON != ''}
+            visible:
+              id: "${LOGIN_BUTTON}"
+          commands:
+            - tapOn:
+                id: "${LOGIN_BUTTON}"
+            - extendedWaitUntil:
+                visible:
+                  id: "${USERNAME_SEL}|${READY_SEL}"
+                timeout: 60000
+      # The web view may still hold a session and skip the form entirely.
+      - runFlow:
+          when:
+            visible:
+              id: "${USERNAME_SEL}"
+          commands:
+            - tapOn:
+                id: "${USERNAME_SEL}"
+            # The browser may have autofilled the field; wipe it before typing.
+            - eraseText: 50
+            - inputText: ${USERNAME}
+            # Typing into a web view is asynchronous: without a pause the next tap can
+            # land while keystrokes are still being delivered. Never use Tab here.
+            - waitForAnimationToEnd:
+                timeout: 1500
+            - tapOn:
+                id: "${PASSWORD_SEL}"
+            - waitForAnimationToEnd:
+                timeout: 800
+            - inputText: ${PASSWORD}
+            - waitForAnimationToEnd:
+                timeout: 1500
+            # Enter submits even when the soft keyboard covers the button.
+            - runFlow:
+                when:
+                  true: ${SUBMIT_SEL == ''}
+                commands:
+                  - pressKey: Enter
+            - runFlow:
+                when:
+                  true: ${SUBMIT_SEL != ''}
+                commands:
+                  - hideKeyboard
+                  - tapOn:
+                      id: "${SUBMIT_SEL}"
+            - extendedWaitUntil:
+                visible:
+                  id: "${READY_SEL}"
+                timeout: 60000

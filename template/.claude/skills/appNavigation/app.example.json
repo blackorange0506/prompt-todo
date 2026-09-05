@@ -1,0 +1,40 @@
+{
+  "_comment": "Copy to app.json and fill in for your app. This example describes the sample app BestPizza (web + Android + iOS). Levels are the screens the app is navigated through, in order; a ticket's context block names them by key or alias.",
+  "platform": "android",
+  "defaultEnvironment": "stage",
+  "environments": {
+    "dev":   {"aliases": ["development", "local"], "note": "developer backend"},
+    "stage": {"aliases": ["staging", "test"],      "note": "QA backend"},
+    "prod":  {"aliases": ["production"],           "allowAutomation": false}
+  },
+  "android": {
+    "package": "com.bestpizza.app.{env}.debug",
+    "launchActivity": "com.bestpizza.app.MainActivity",
+    "build": "./gradlew :app:install{Env}Debug",
+    "versionCodeFrom": "gradle.properties:app.versionCode",
+    "versionBumpCommitPattern": "Update version code to {versionCode}"
+  },
+  "ios": {
+    "bundleId": "com.bestpizza.app",
+    "appName": "BestPizza",
+    "project": "iosApp/BestPizza.xcodeproj",
+    "scheme": "BestPizza",
+    "build": "xcodebuild -project iosApp/BestPizza.xcodeproj -scheme BestPizza -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,id={udid}' BESTPIZZA_ENV={env} build",
+    "simulator": "iPhone 15"
+  },
+  "frontend": {
+    "baseUrl": {"dev": "http://localhost:3000", "stage": "https://stage.bestpizza.example.com"},
+    "headless": false
+  },
+  "login": {
+    "kind": "web-form",
+    "loginButton": "start_login_button",
+    "selectors": {"username": "username", "password": "password", "submit": "login_submit"},
+    "readySelector": "home_root"
+  },
+  "levels": [
+    {"key": "Restaurant", "aliases": ["Store", "Branch"], "screen": {"search": "restaurant_search", "row": "restaurant_row", "ready": "restaurant_root"}},
+    {"key": "Pizza",      "aliases": ["Item", "Product"], "screen": {"search": "menu_search",       "row": "pizza_row",      "ready": "pizza_root"}},
+    {"key": "Topping",    "aliases": ["Extra"],           "screen": {"search": "topping_search",    "row": "topping_row",    "ready": "topping_root"}}
+  ]
+}

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>BestPizza (fixture)</title>
+<style>body{font-family:sans-serif;max-width:32rem;margin:2rem auto}li{padding:.4rem;border-bottom:1px solid #ddd;cursor:pointer}.hidden{display:none}</style>
+</head>
+<body>
+<!-- A static stand-in for the BestPizza web app, used by tests/frontend.test.sh. Every screen
+     is a section toggled by script; ids follow app.example.json (data-testid values). -->
+<section id="login">
+  <h1>BestPizza</h1>
+  <button data-testid="start_login_button" onclick="show('form')">Log in</button>
+  <div id="form" class="hidden">
+    <input data-testid="username" placeholder="email">
+    <input data-testid="password" type="password" placeholder="password">
+    <button data-testid="login_submit" onclick="login()">Sign in</button>
+  </div>
+</section>
+<section id="home" class="hidden" data-testid="home_root">
+  <h2>Restaurants</h2>
+  <input data-testid="restaurant_search" oninput="filter('restaurants',this.value)">
+  <ul id="restaurants">
+    <li data-testid="restaurant_row" onclick="open_('menu','Downtown')">Downtown <small>Main St 1</small></li>
+    <li data-testid="restaurant_row" onclick="open_('menu','Downtown East')">Downtown East <small>Main St 99</small></li>
+    <li data-testid="restaurant_row" onclick="open_('menu','Harbour')">Harbour <small>Pier 4</small></li>
+  </ul>
+</section>
+<section id="menu" class="hidden" data-testid="restaurant_root">
+  <h2 id="menu-title">Menu</h2>
+  <input data-testid="menu_search" oninput="filter('pizzas',this.value)">
+  <ul id="pizzas">
+    <li data-testid="pizza_row" onclick="open_('pizza','Margherita')">Margherita <small>9.00</small></li>
+    <li data-testid="pizza_row" onclick="open_('pizza','Four Cheese')">Four Cheese <small>11.50</small></li>
+  </ul>
+</section>
+<section id="pizza" class="hidden" data-testid="pizza_root">
+  <h2 id="pizza-title">Pizza</h2>
+  <input data-testid="topping_search" oninput="filter('toppings',this.value)">
+  <ul id="toppings">
+    <li data-testid="topping_row" onclick="open_('topping','Olives')">Olives <small>1.00</small></li>
+    <li data-testid="topping_row" onclick="open_('topping','Basil')">Basil <small>0.50</small></li>
+  </ul>
+</section>
+<section id="topping" class="hidden" data-testid="topping_root"><h2 id="topping-title">Topping</h2></section>
+<script>
+function show(id){document.getElementById(id).classList.remove('hidden')}
+function hideAll(){for(const s of document.querySelectorAll('section'))s.classList.add('hidden')}
+function login(){const u=document.querySelector('[data-testid=username]').value;if(!u){alert('username');return}hideAll();show('home');history.replaceState(null,'','#home')}
+function filter(list,q){for(const li of document.querySelectorAll('#'+list+' li'))li.style.display=li.textContent.toLowerCase().includes(q.toLowerCase())?'':'none'}
+function open_(id,name){hideAll();show(id);document.getElementById(id+'-title').textContent=name;history.replaceState(null,'','#'+id+'/'+encodeURIComponent(name))}
+</script>
+</body>
+</html>

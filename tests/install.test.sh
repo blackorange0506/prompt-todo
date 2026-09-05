@@ -31,6 +31,8 @@ assert_eq "other hook kept"    "1" "$(count_in_file 'echo other-hook' "$D/.claud
 assert_eq "permissions kept"   "1" "$(count_in_file 'Bash(ls:*)' "$D/.claude/settings.json")"
 assert_eq "gitignore attachments" "1" "$(count_in_file 'todoAttachments/' "$D/.gitignore")"
 assert_eq "gitignore build kept"  "1" "$(count_in_file 'build/' "$D/.gitignore")"
+assert_eq "gitignore node_modules" "1" "$(count_in_file 'drivers/frontend/node_modules/' "$D/.gitignore")"
+assert_no_file "node_modules not copied" "$D/.claude/skills/appNavigation/drivers/frontend/node_modules"
 [ -x "$D/.claude/hooks/todo-confirm.sh" ] && pass "hook executable" || fail "hook executable"
 
 # the installed hook runs from the installed tree

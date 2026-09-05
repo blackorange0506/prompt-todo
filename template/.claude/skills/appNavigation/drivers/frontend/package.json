@@ -1,0 +1,9 @@
+{
+  "name": "app-navigation-frontend-driver",
+  "private": true,
+  "description": "Playwright driver for the /appNavigation skill. Run `npm install` here once, then `npx playwright install chromium`.",
+  "type": "module",
+  "dependencies": {
+    "playwright": "^1.47.0"
+  }
+}

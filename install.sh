@@ -95,7 +95,7 @@ copy_one() {
 
 ( cd "$TEMPLATE" && find . -type f | sed 's|^\./||' | LC_ALL=C sort ) | while IFS= read -r rel; do
   case "$rel" in
-    .DS_Store|*/.DS_Store) continue ;;
+    .DS_Store|*/.DS_Store|*/node_modules/*|*/package-lock.json) continue ;;
     skills/appNavigation/*) [ "$WITH_APP_NAV" = 1 ] || continue ;;
   esac
   copy_one "$rel"
@@ -154,7 +154,10 @@ ensure_ignored() {
   log ".gitignore: $line"
 }
 ensure_ignored "${ATTACH_DIR%/}/"
-[ "$WITH_APP_NAV" = 1 ] && ensure_ignored ".claude/skills/appNavigation/credentials.json"
+if [ "$WITH_APP_NAV" = 1 ]; then
+  ensure_ignored ".claude/skills/appNavigation/credentials.json"
+  ensure_ignored ".claude/skills/appNavigation/drivers/frontend/node_modules/"
+fi
 
 # ---- 6. config, rules, version, manifest -------------------------------------------
 
