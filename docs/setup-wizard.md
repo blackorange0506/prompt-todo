@@ -55,7 +55,39 @@ TODO.jd.archive.md       done items, moved by    header:  # My App — TODO arch
 | `Android+:`   | seen on Android, almost certainly elsewhere too: fix all, verify Android first                         |
 | `Web+:`       | seen in the desktop browser, almost certainly in the phone browser too: fix both, verify desktop first |
 | `MobileWeb+:` | seen in the phone browser, almost certainly in the desktop browser too: fix both, verify mobile first  |
+| `Chrome:`     | the web frontend in Chrome only                                                                        |
+| `Safari:`     | the web frontend in Safari only                                                                        |
+| `Firefox:`    | the web frontend in Firefox only                                                                       |
+| `Edge:`       | the web frontend in Edge only                                                                          |
+| `Chrome+:`    | seen in Chrome, almost certainly in the other browsers too: fix all, verify Chrome first               |
+| `Safari+:`    | seen in Safari, almost certainly in the other browsers too: fix all, verify Safari first               |
+| `Firefox+:`   | seen in Firefox, almost certainly in the other browsers too: fix all, verify Firefox first             |
+| `Edge+:`      | seen in Edge, almost certainly in the other browsers too: fix all, verify Edge first                   |
 | `Docs:`       | documentation only                                                                                     |
 | `Infra:`      | build, CI, tooling                                                                                     |
 | `QA:`         | the user's personal row — Claude ignores it entirely                                                   |
 | `Admin:`      | the user's personal row — Claude ignores it entirely                                                   |
+
+A mobile-only team keeps `Android:`, `IOS:` and their `+` pair; a web team keeps `Web:`,
+`MobileWeb:`, their `+` pair and `Backend:`, and the browser tags only when it ships
+browser-specific fixes; `Docs:` and `Infra:` suit everyone. The default tag can be set to none:
+an item without a tag then simply has no tag.
+
+## Step 4 — why a tracker connection
+
+See [jira-mcp.md](jira-mcp.md): what the connection is for, the worked example, the
+Atlassian MCP setup, the GitHub alternative and paste mode.
+
+## Step 5 — app navigation
+
+The wizard never builds the navigation skill for you. It offers to connect one you already
+have, or to skip and come back: filling the shipped carcass is described in
+[app-navigation.md](app-navigation.md). Connecting the carcass before it is filled is allowed
+(the wizard warns), so the rules and `/todoFromTicket` already produce the `/appNavigation`
+items while you work on it.
+
+## Team use
+
+Commit `.claude/todo-flow/config.json`, `RULES.md`, the skills and the hook. A teammate who
+clones the project gets the same flow; they run `/todoSetup todo` once for their own todo
+file, and `/todoSetup permissions` if they want the allow rules (that file is personal).

@@ -7,7 +7,8 @@ First public version.
 - Todo core: per-user `TODO.<name>.md`, ids that are never reused, `#new` autoincrement,
   `#wait` / `#go`, the confirm-word hook (`works` / `fixed` → tick + `/todoIdealPrompt --replace`),
   `[<name>#N]` code markers, ticket blocks, a configurable tag table (platform tags
-  Android / IOS / Web / MobileWeb / Backend / Desktop / All plus IOS+ / Android+ / Web+ / MobileWeb+ / Docs / Infra).
+  Android / IOS / Web / MobileWeb / Backend / Desktop / All plus IOS+ / Android+ / Web+ / MobileWeb+, the browsers Chrome / Safari / Firefox / Edge with
+  their + forms, Docs / Infra).
 - Skills: `/todoSetup` (seven-step wizard, every step skippable and re-runnable),
   `/todoFromTicket` (Jira via the Atlassian MCP server, GitHub Issues via `gh`, paste mode),
   `/todoIdealPrompt`, `/todoIdealize`, `/todoNumber`, `/todoReverse`, `/todoArchive`.
