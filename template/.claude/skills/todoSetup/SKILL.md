@@ -185,19 +185,18 @@ Re-render. `--yes`: unchanged.
 
 Explain in three lines: a ticket's context block (`Server:` plus the lines naming the screen)
 can become an item that opens the app right there on a device; that needs a skill that knows
-your app's build, login and screens. The package ships a carcass for it,
-`.claude/skills/appNavigation/`, but filling it is real work (a config, Maestro or Playwright
-flows, test ids in the app).
+your app's build, login and screens. The package ships only a description of it,
+`.claude/skills/appNavigation/SKILL.md` — implementing it is the user's work, for their app.
 
 **Ask — two options only:**
-- **Skip (default)** — "you can do this later": fill the carcass by hand following
-  `.claude/skills/appNavigation/README.md` (or connect a skill you already have), then run
-  `/todoSetup appNavigation` again. Writes `appNavigation.mode = "none"`.
+- **Skip (default)** — "you can do this later": implement the skill for your app (the
+  description says what it must do), or use a skill you already have, then run
+  `/todoSetup appNavigation` again to connect it. Writes `appNavigation.mode = "none"`.
 - **Connect an existing skill** — list the directories in `.claude/skills/` (`ls`), the
   shipped `appNavigation` included, and ask which one. Confirm in one question that the skill
   takes a spec as sub-bullets (the lines a ticket's context block carries). If the pick is the
-  shipped carcass and `.claude/skills/appNavigation/app.json` does not exist, warn that the
-  carcass is not filled yet and point to its README, but still record it. Writes
+  shipped `appNavigation` and its `SKILL.md` still says it is not implemented, say so — it
+  stays a placeholder until implemented — but still record it. Writes
   `appNavigation.mode = "existing"`, `appNavigation.skill = "<name>"`.
 
 Re-render — the rules gain (or lose) the **App-navigation items** paragraph, and
@@ -205,17 +204,12 @@ Re-render — the rules gain (or lose) the **App-navigation items** paragraph, a
 
 ## Step 6 — `permissions`: allow rules
 
-Explain: the skills run `git config user.name` and the render script; a connected
-app-navigation carcass runs its driver tools. Allow rules in `.claude/settings.local.json`
-(personal, not committed) spare a prompt on each.
+Explain: the skills run `git config user.name` and the render script; allow rules in
+`.claude/settings.local.json` (personal, not committed) spare a prompt on each.
 
 Propose the list, ask *Add* / *Skip*:
 - always: `Bash(git config user.name)`, `Bash(python3 .claude/todo-flow/bin/render_rules.py:*)`;
-- with `tracker.kind = github`: `Bash(gh issue view:*)`, `Bash(gh issue list:*)`;
-- with the shipped carcass connected: by `app.json`'s `platform` — android:
-  `Bash(adb:*)`, `Bash(maestro:*)`, `Bash(./gradlew:*)`; ios: `Bash(xcrun:*)`,
-  `Bash(xcodebuild:*)`, `Bash(maestro:*)`; frontend: `Bash(node:*)`, `Bash(npx playwright:*)`;
-  all: `Bash(bash .claude/skills/appNavigation/scripts/appNavigation.sh:*)`.
+- with `tracker.kind = github`: `Bash(gh issue view:*)`, `Bash(gh issue list:*)`.
 
 Write with `Edit` (create the file with `{"permissions":{"allow":[…]}}` if missing; merge into
 an existing `permissions.allow`, no duplicates). `--yes`: add the always-on pair only.

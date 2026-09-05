@@ -7,8 +7,8 @@
 # Removes the package files listed in .claude/todo-flow/MANIFEST, the hook entry in
 # .claude/settings.json, the import line in CLAUDE.md and the .gitignore entries. Keeps every
 # TODO.*.md file, the attachments directory and — with --keep-config — config.json.
-# .claude/skills/appNavigation/app.json and credentials.json are never deleted; if they exist
-# the directory is left in place and you are told.
+# Files you added under .claude/skills/appNavigation are never deleted; if any exist the
+# directory is left in place and you are told.
 
 set -eu
 
@@ -75,15 +75,8 @@ PY
   fi
 fi
 
-GITIGNORE="$TARGET/.gitignore"
-if [ -f "$GITIGNORE" ]; then
-  if grep -qxF '.claude/skills/appNavigation/credentials.json' "$GITIGNORE"; then
-    if [ "$DRY" = 1 ]; then dry "remove the credentials entry from .gitignore"; else
-      grep -vxF '.claude/skills/appNavigation/credentials.json' "$GITIGNORE" > "$GITIGNORE.tmp" && mv "$GITIGNORE.tmp" "$GITIGNORE"
-    fi
-  fi
-  # the attachments entry stays: the directory may hold downloaded files the user wants kept out of git
-fi
+# The .gitignore entry for the attachments directory stays: it may hold downloaded files the
+# user wants kept out of git.
 
 # Empty directories left behind.
 if [ "$DRY" = 0 ]; then

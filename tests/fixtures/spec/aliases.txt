@@ -1,5 +1,0 @@
-Environment: DEV
-Version: 300
-Store: 5
-product: Name: Four Cheese
-Extra: 9 | Basil

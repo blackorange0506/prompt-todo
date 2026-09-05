@@ -13,7 +13,7 @@
 #   2. copies template/.claude/** into <target>/.claude/ (package files, always overwritten)
 #   3. adds the works/fixed hook to <target>/.claude/settings.json (merge, never overwrite)
 #   4. appends `@.claude/todo-flow/RULES.md` to <target>/CLAUDE.md (created if missing)
-#   5. adds credentials + attachments entries to <target>/.gitignore
+#   5. adds the attachments directory to <target>/.gitignore
 #   6. writes .claude/todo-flow/config.json from the example if absent, renders RULES.md,
 #      stamps VERSION and writes MANIFEST (the list uninstall.sh removes)
 #
@@ -95,7 +95,7 @@ copy_one() {
 
 ( cd "$TEMPLATE" && find . -type f | sed 's|^\./||' | LC_ALL=C sort ) | while IFS= read -r rel; do
   case "$rel" in
-    .DS_Store|*/.DS_Store|*/node_modules/*|*/package-lock.json) continue ;;
+    .DS_Store|*/.DS_Store) continue ;;
     skills/appNavigation/*) [ "$WITH_APP_NAV" = 1 ] || continue ;;
   esac
   copy_one "$rel"
@@ -154,10 +154,6 @@ ensure_ignored() {
   log ".gitignore: $line"
 }
 ensure_ignored "${ATTACH_DIR%/}/"
-if [ "$WITH_APP_NAV" = 1 ]; then
-  ensure_ignored ".claude/skills/appNavigation/credentials.json"
-  ensure_ignored ".claude/skills/appNavigation/drivers/frontend/node_modules/"
-fi
 
 # ---- 6. config, rules, version, manifest -------------------------------------------
 
@@ -191,7 +187,7 @@ cat <<DONE
 Installed claude-todo-flow $(cat "$SRC/VERSION") in $TARGET
   rules:    .claude/todo-flow/RULES.md   (imported from CLAUDE.md)
   config:   .claude/todo-flow/config.json
-  skills:   /todoSetup /todoFromTicket /todoIdealPrompt /todoIdealize /todoNumber /todoReverse /todoArchive$([ "$WITH_APP_NAV" = 1 ] && printf ' /appNavigation (carcass)')
+  skills:   /todoSetup /todoFromTicket /todoIdealPrompt /todoIdealize /todoNumber /todoReverse /todoArchive$([ "$WITH_APP_NAV" = 1 ] && printf ' /appNavigation (placeholder)')
 
 Next: open Claude Code in $TARGET and run  /todoSetup
       (every step can be skipped and re-run later; /todoSetup --yes takes all defaults)

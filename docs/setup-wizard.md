@@ -21,7 +21,7 @@ the config by hand and run `python3 .claude/todo-flow/bin/render_rules.py` yours
 | 2 | `tags`          | shows the default table; remove rows, add rows, change the default, change the ignore rows | `tags`                        | the default table below                                      |
 | 3 | `rules`         | nothing — renders, then checks the `CLAUDE.md` import, the hook entry, jq/python3, and pipe-tests the hook | `RULES.md`; offers to repair the import and the hook | —                                        |
 | 4 | `tracker`       | Jira (Atlassian MCP) / GitHub Issues (gh) / none; host + project keys or `owner/repo`; runs the connection check and a test fetch | `tracker`                | `/todoFromTicket` works only with pasted ticket text; the ticket-key input of app navigation is unavailable |
-| 5 | `appNavigation` | Skip (default) or connect an existing skill (the shipped carcass included)          | `appNavigation.mode` + `skill`           | ticket context blocks stay as plain sub-bullets of the first dev item; fill the carcass later and re-run this step |
+| 5 | `appNavigation` | Skip (default) or connect an existing skill (the shipped placeholder included)      | `appNavigation.mode` + `skill`           | ticket context blocks stay as plain sub-bullets of the first dev item; implement the skill later and re-run this step |
 | 6 | `permissions`   | add allow rules to `.claude/settings.local.json` for what the skills run          | `settings.local.json`                    | Claude Code asks on each of those commands                   |
 | 7 | `summary`       | prints the effective config and what is off; offers a smoke test (`#new` item numbered, then removed) | nothing lasting                | —                                                            |
 
@@ -81,10 +81,11 @@ Atlassian MCP setup, the GitHub alternative and paste mode.
 ## Step 5 — app navigation
 
 The wizard never builds the navigation skill for you. It offers to connect one you already
-have, or to skip and come back: filling the shipped carcass is described in
-[app-navigation.md](app-navigation.md). Connecting the carcass before it is filled is allowed
-(the wizard warns), so the rules and `/todoFromTicket` already produce the `/appNavigation`
-items while you work on it.
+have, or to skip and come back. The package ships `.claude/skills/appNavigation/SKILL.md` as a
+description of what the skill should do — implementing it is app-specific work, see
+[app-navigation.md](app-navigation.md). Connecting the placeholder before it is implemented is
+allowed (the wizard says so), so the rules and `/todoFromTicket` already produce the
+`/appNavigation` items while you work on it.
 
 ## Team use
 

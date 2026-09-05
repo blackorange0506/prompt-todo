@@ -15,7 +15,7 @@ First public version.
 - Rules rendered from `config.json` into `RULES.md`, imported by `CLAUDE.md`.
 - `install.sh` / `uninstall.sh`: idempotent, merge into existing `settings.json`, `CLAUDE.md`
   and `.gitignore`.
-- `appNavigation` carcass: spec parser, dispatcher, Android (adb + Maestro), iOS (simctl +
-  Maestro) and web (Playwright) drivers, `app.json` config model, BestPizza sample.
-- Tests for the hook, the renderer, the installer, the parser, the dispatcher and the
-  Playwright driver; CI on Linux and macOS (bash 3.2 included); a ban-list check.
+- `appNavigation` placeholder: a description of what the skill should do, to be implemented
+  per app and connected with `/todoSetup appNavigation`.
+- Tests for the hook, the renderer, the installer and the docs; CI on Linux and macOS
+  (bash 3.2 included); a ban-list check.

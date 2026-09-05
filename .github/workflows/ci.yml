@@ -20,11 +20,6 @@ jobs:
         run: bash scripts/lint.sh
       - name: docs in sync
         run: diff -u template/.claude/todo-flow/README.md docs/todo-workflow.md
-      - name: playwright for the frontend driver (Linux only)
-        if: runner.os == 'Linux'
-        run: |
-          cd template/.claude/skills/appNavigation/drivers/frontend
-          npm ci --silent && npx playwright install --with-deps chromium
       - name: tests (system bash)
         run: bash tests/run.sh
       - name: tests (/bin/bash 3.2 on macOS)

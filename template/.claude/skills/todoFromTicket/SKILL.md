@@ -89,7 +89,7 @@ Read once per run from `.claude/todo-flow/config.json`:
        - Topping: Olives
      ```
 
-     Typing its `#N` runs that skill with the sub-bullets as the spec (see the
+     Typing its `#N` runs that skill with the sub-bullets as the spec, copied as written (see the
      **App-navigation items** paragraph of the rules). It carries no tag and no `QA:`
      sub-checkbox; the dev items' `QA:` checks say "on the #42 screen" instead of repeating
      the place. A ticket without such a block gets no such item — never invent a spec from

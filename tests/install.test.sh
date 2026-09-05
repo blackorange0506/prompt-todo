@@ -31,8 +31,6 @@ assert_eq "other hook kept"    "1" "$(count_in_file 'echo other-hook' "$D/.claud
 assert_eq "permissions kept"   "1" "$(count_in_file 'Bash(ls:*)' "$D/.claude/settings.json")"
 assert_eq "gitignore attachments" "1" "$(count_in_file 'todoAttachments/' "$D/.gitignore")"
 assert_eq "gitignore build kept"  "1" "$(count_in_file 'build/' "$D/.gitignore")"
-assert_eq "gitignore node_modules" "1" "$(count_in_file 'drivers/frontend/node_modules/' "$D/.gitignore")"
-assert_no_file "node_modules not copied" "$D/.claude/skills/appNavigation/drivers/frontend/node_modules"
 [ -x "$D/.claude/hooks/todo-confirm.sh" ] && pass "hook executable" || fail "hook executable"
 
 # the installed hook runs from the installed tree
@@ -62,7 +60,7 @@ assert_eq "config reset" "0" "$(count_in_file 'Edited' "$D/.claude/todo-flow/con
 E="$(new_tmp install-noapp)"; ( cd "$E" && git init -q )
 bash "$ROOT/install.sh" --target "$E" --without-app-navigation >/dev/null 2>&1 || fail "install without app nav"
 assert_no_file "no appNavigation skill" "$E/.claude/skills/appNavigation"
-assert_eq "no credentials gitignore" "0" "$(count_in_file 'credentials.json' "$E/.gitignore")"
+assert_file "placeholder skill installed by default" "$D/.claude/skills/appNavigation/SKILL.md"
 assert_file "CLAUDE.md created" "$E/CLAUDE.md"
 
 # uninstall restores

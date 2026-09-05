@@ -11,8 +11,8 @@ the prompt manager, the prompt tracker and the link between tickets and code.
   prompt that caused it.
 - `/todoFromTicket PROJ-321` turns a Jira ticket or GitHub issue into numbered first prompts,
   each with the check you will perform by hand.
-- Optional: an app-navigation skill that opens your app at the screen a ticket describes
-  (Android and iOS through Maestro, web through Playwright) — shipped as a carcass you fill in.
+- Optional: an `/appNavigation` skill that opens your app at the screen a ticket describes —
+  shipped as a description only; you implement it for your app.
 
 Read [docs/todo-workflow.md](docs/todo-workflow.md) ("Smart TODO") for the whole flow with examples.
 
@@ -21,7 +21,7 @@ Read [docs/todo-workflow.md](docs/todo-workflow.md) ("Smart TODO") for the whole
 ```bash
 git clone https://github.com/<you>/claude-todo-flow ~/src/claude-todo-flow
 cd ~/your/project
-bash ~/src/claude-todo-flow/install.sh          # add --without-app-navigation to skip the carcass
+bash ~/src/claude-todo-flow/install.sh          # add --without-app-navigation to skip that placeholder
 ```
 
 Then open Claude Code in the project and run:
@@ -36,8 +36,7 @@ on its own (`/todoSetup tracker`); `/todoSetup --yes` takes every default. The f
 works right after `install.sh` with the default tag table and no tracker.
 
 Requirements: bash 3.2+, git, python3. `jq` is used when present. The tracker step needs the
-Atlassian MCP server (Jira) or the `gh` CLI (GitHub Issues); the app-navigation carcass needs
-adb + Maestro (Android), Xcode + Maestro (iOS) or Node + Playwright (web).
+Atlassian MCP server (Jira) or the `gh` CLI (GitHub Issues).
 
 ## What install.sh does
 
@@ -46,10 +45,10 @@ adb + Maestro (Android), Xcode + Maestro (iOS) or Node + Playwright (web).
 | `.claude/todo-flow/`                        | `config.json` (yours), `RULES.md` (generated), the render scripts, the readme |
 | `.claude/hooks/todo-confirm.sh`             | catches `works` / `fixed` so the rewrite never depends on memory |
 | `.claude/skills/todo*`                      | `/todoSetup`, `/todoFromTicket`, `/todoIdealPrompt`, `/todoIdealize`, `/todoNumber`, `/todoReverse`, `/todoArchive` |
-| `.claude/skills/appNavigation/`             | the navigation carcass (optional)                             |
+| `.claude/skills/appNavigation/`             | the navigation placeholder, a description to implement (optional) |
 | one line in `CLAUDE.md`                     | `@.claude/todo-flow/RULES.md` — the rules are always in context |
 | one entry in `.claude/settings.json`        | the hook, merged next to whatever is already there            |
-| two lines in `.gitignore`                   | the attachments directory and the navigation credentials      |
+| one line in `.gitignore`                    | the attachments directory                                     |
 
 Re-running `install.sh` upgrades the package files and leaves your config, todo files and
 credentials alone. `uninstall.sh` removes exactly what was added and keeps `TODO.*.md`.
@@ -62,19 +61,17 @@ set and one set of skills, and each person has their own todo file.
 - [docs/todo-workflow.md](docs/todo-workflow.md) — the flow, for people
 - [docs/setup-wizard.md](docs/setup-wizard.md) — every wizard step: what it asks, what it writes
 - [docs/jira-mcp.md](docs/jira-mcp.md) — connecting Jira (Atlassian MCP) or GitHub Issues
-- [docs/app-navigation.md](docs/app-navigation.md) — filling the app-navigation carcass
+- [docs/app-navigation.md](docs/app-navigation.md) — what `/appNavigation` should do and how to connect yours
 
 ## Development
 
 ```bash
-bash tests/run.sh              # hook, renderer, installer, spec parser, dispatcher, Playwright driver
-bash scripts/lint.sh           # shellcheck + py_compile + node --check
+bash tests/run.sh              # hook, renderer, installer, docs
+bash scripts/lint.sh           # shellcheck + py_compile
 bash scripts/check_banlist.sh  # no traces of the project this was extracted from
 ```
 
-The Playwright test needs `npm install && npx playwright install chromium` in
-`template/.claude/skills/appNavigation/drivers/frontend` and skips itself otherwise. CI runs
-everything on Linux and macOS (the macOS job also runs the tests under `/bin/bash` 3.2).
+CI runs everything on Linux and macOS (the macOS job also runs the tests under `/bin/bash` 3.2).
 
 ## License
 
