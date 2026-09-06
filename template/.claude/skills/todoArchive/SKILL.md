@@ -2,7 +2,7 @@
 name: todoArchive
 description: "Move every done ([x]) item out of the user's todo file (TODO.<git user.name>.md, resolved as in the todo rules) into TODO.<git user.name>.archive.md, verbatim, and report what moved. Done items are never deleted — the archive keeps the ids so the next id stays unique, and git picks the move up in the user's normal commits (no git checks, no commits by this skill). Use when the user wants to clean the done prompts out of the todo file — phrases like '/todoArchive', 'archive the done items', 'remove done prompts', 'clean up the todo', 'move done items out'. This skill IS allowed to edit the user's todo file and its archive; that is its purpose."
 argument-hint: ""
-allowed-tools: Read, Edit, Write, Glob, Grep, Bash(git config:*), Bash(python3:*)
+allowed-tools: Read, Edit, Write, Glob, Grep, Bash(git config:*), Bash(bash .claude/prompt-todo/bin/py.sh:*)
 ---
 
 # /todoArchive

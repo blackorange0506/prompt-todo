@@ -3,7 +3,7 @@ name: todoSetup
 description: "The configuration wizard for Prompt TODO: seven steps (todo file + title, tags, rules check, ticket tracker, app navigation, permissions, summary), each one skippable and re-runnable on its own, --yes takes every default. Edits .claude/prompt-todo/config.json and re-renders .claude/prompt-todo/RULES.md. Runs only when the user invokes it: '/todoSetup', '/todoSetup tags', '/todoSetup tracker', '/todoSetup --yes'."
 argument-hint: "[todo|tags [add <Tag>: <meaning>|remove <Tag>|detect]|rules|tracker|appNavigation|permissions|summary] [--yes]"
 disable-model-invocation: true
-allowed-tools: Read, Edit, Write, Glob, Grep, AskUserQuestion, Bash(git config:*), Bash(git rev-parse:*), Bash(python3:*), Bash(claude mcp:*), Bash(gh auth:*), Bash(gh issue:*), Bash(ls:*), Bash(command:*), Bash(bash .claude/hooks/todo-confirm.sh:*), Bash(echo:*), Bash(basename:*), mcp__atlassian__getJiraIssue
+allowed-tools: Read, Edit, Write, Glob, Grep, AskUserQuestion, Bash(git config:*), Bash(git rev-parse:*), Bash(bash .claude/prompt-todo/bin/py.sh:*), Bash(claude mcp:*), Bash(gh auth:*), Bash(gh issue:*), Bash(ls:*), Bash(command:*), Bash(bash .claude/hooks/todo-confirm.sh:*), Bash(echo:*), Bash(basename:*), mcp__atlassian__getJiraIssue
 ---
 
 # /todoSetup
@@ -29,7 +29,7 @@ step later by name.
   option** (keeps the current value; acknowledge in one line: `Skipped — tags unchanged`).
   With `--yes`, ask nothing: take the default of every step and print one line per step.
 - **Write with the `Edit` tool**, never the shell, then re-render:
-  `python3 .claude/prompt-todo/bin/render_rules.py`. Show its one-line output. If it fails,
+  `bash .claude/prompt-todo/bin/py.sh render_rules.py`. Show its one-line output. If it fails,
   show the error and revert the edit.
 - Never touch the user's todo file except where a step says so (step 1 creates it; step 7's
   smoke test appends and removes one line, with permission).
@@ -89,7 +89,7 @@ and scopes the item. The table is built from what the repo contains, so this ste
 asks nothing. There is no `All` tag and no default tag: an untagged item is simply about this
 project.
 
-1. Run `python3 .claude/prompt-todo/bin/detect_platforms.py` and print its lines as they are
+1. Run `bash .claude/prompt-todo/bin/py.sh detect_platforms.py` and print its lines as they are
    (`Android  app/src/main/AndroidManifest.xml`), one per detected platform.
 2. Run it again with `--tags`: that is the new `tags` object. Its rule: one row per detected
    platform (Web also brings `MobileWeb` and the four browser rows), `<P>+` rows only when two
@@ -120,12 +120,14 @@ Validate before writing: a tag cannot be in both lists and no tag may repeat;
 
 No question. Do, and print a checklist with ✓/✗ per line:
 
-1. `python3 .claude/prompt-todo/bin/render_rules.py` → `RULES.md` rendered.
+1. `bash .claude/prompt-todo/bin/py.sh render_rules.py` → `RULES.md` rendered.
 2. `CLAUDE.md` contains the line `@.claude/prompt-todo/RULES.md` (Grep). Missing → offer to
    append it (Edit).
-3. `.claude/settings.json` has the hook: `python3 .claude/prompt-todo/bin/merge_settings.py .claude/settings.json --check`.
+3. `.claude/settings.json` has the hook: `bash .claude/prompt-todo/bin/py.sh merge_settings.py .claude/settings.json --check`.
    Missing → offer to run it without `--check`.
-4. `command -v jq` / `command -v python3` — which one the hook will use.
+4. `command -v jq`, else the Python the wrapper found (`bash .claude/prompt-todo/bin/py.sh` with no
+   argument prints its usage; `python3`, `python` or `py -3` — on Windows usually not `python3`)
+   — which one the hook will use.
 5. Pipe-test: `echo '{"prompt":"works"}' | bash .claude/hooks/todo-confirm.sh` must print
    JSON containing `TODO CONFIRM TRIGGER`; `echo '{"prompt":"hello"}' | …` must print
    nothing.
@@ -229,8 +231,8 @@ Explain: the skills run `git config user.name` and the render script; allow rule
 `.claude/settings.local.json` (personal, not committed) spare a prompt on each.
 
 Propose the list, ask *Add* / *Skip*:
-- always: `Bash(git config user.name)`, `Bash(python3 .claude/prompt-todo/bin/render_rules.py:*)`,
-  `Bash(python3 .claude/prompt-todo/bin/detect_platforms.py:*)`;
+- always: `Bash(git config user.name)`, `Bash(bash .claude/prompt-todo/bin/py.sh:*)` (the
+  render and detect scripts run through that wrapper);
 - with `tracker.kind = github`: `Bash(gh issue view:*)`, `Bash(gh issue list:*)`.
 
 Write with `Edit` (create the file with `{"permissions":{"allow":[…]}}` if missing; merge into

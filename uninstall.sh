@@ -8,7 +8,7 @@
 # .claude/settings.json, the import line in CLAUDE.md and the .gitignore entries. Keeps every
 # TODO.*.md file, the attachments directory and — with --keep-config — config.json.
 # Files you added under .claude/skills/appNavigation are never deleted; if any exist the
-# directory is left in place and you are told.
+# directory is left in place and you are told. Runs on macOS, Linux and Windows (Git Bash).
 
 set -eu
 
@@ -36,6 +36,12 @@ TARGET="$(cd "$TARGET" && pwd)"
 FLOW="$TARGET/.claude/prompt-todo"
 [ -f "$FLOW/MANIFEST" ] || err "no .claude/prompt-todo/MANIFEST in $TARGET — nothing installed here (or an older install; delete .claude/prompt-todo, .claude/hooks/todo-confirm.sh and .claude/skills/todo* by hand)"
 
+# Python 3 by whatever name it has here (config.sh's prompt_todo_py); an install older than
+# that helper falls back to python3.
+# shellcheck source=template/.claude/prompt-todo/bin/config.sh
+[ -f "$FLOW/bin/config.sh" ] && . "$FLOW/bin/config.sh"
+command -v prompt_todo_py >/dev/null 2>&1 || prompt_todo_py() { python3 "$@"; }
+
 rm_file() {
   local f="$TARGET/$1"
   [ -e "$f" ] || return 0
@@ -44,8 +50,8 @@ rm_file() {
 
 # The hook first, while merge_settings.py is still there.
 SETTINGS="$TARGET/.claude/settings.json"
-if [ -f "$SETTINGS" ] && python3 "$FLOW/bin/merge_settings.py" "$SETTINGS" --check 2>/dev/null; then
-  if [ "$DRY" = 1 ]; then dry "remove the hook from .claude/settings.json"; else python3 "$FLOW/bin/merge_settings.py" "$SETTINGS" --remove; fi
+if [ -f "$SETTINGS" ] && prompt_todo_py "$FLOW/bin/merge_settings.py" "$SETTINGS" --check 2>/dev/null; then
+  if [ "$DRY" = 1 ]; then dry "remove the hook from .claude/settings.json"; else prompt_todo_py "$FLOW/bin/merge_settings.py" "$SETTINGS" --remove; fi
 fi
 
 while IFS= read -r rel; do
@@ -64,7 +70,7 @@ fi
 CLAUDE_MD="$TARGET/CLAUDE.md"
 if [ -f "$CLAUDE_MD" ] && grep -qF '@.claude/prompt-todo/RULES.md' "$CLAUDE_MD"; then
   if [ "$DRY" = 1 ]; then dry "remove the import line from CLAUDE.md"; else
-    python3 - "$CLAUDE_MD" <<'PY'
+    prompt_todo_py - "$CLAUDE_MD" <<'PY'
 import sys
 p = sys.argv[1]
 lines = open(p, encoding="utf-8").read().split("\n")
@@ -76,7 +82,15 @@ PY
 fi
 
 # The .gitignore entry for the attachments directory stays: it may hold downloaded files the
-# user wants kept out of git.
+# user wants kept out of git. The .gitattributes lines install.sh added go.
+GITATTRIBUTES="$TARGET/.gitattributes"
+if [ -f "$GITATTRIBUTES" ] && grep -qF '.claude/prompt-todo/bin/* text eol=lf' "$GITATTRIBUTES"; then
+  if [ "$DRY" = 1 ]; then dry "remove the prompt-todo lines from .gitattributes"; else
+    grep -vxF -e '.claude/hooks/*.sh text eol=lf' -e '.claude/prompt-todo/bin/* text eol=lf' "$GITATTRIBUTES" > "$GITATTRIBUTES.tmp" || true
+    if [ -s "$GITATTRIBUTES.tmp" ]; then mv "$GITATTRIBUTES.tmp" "$GITATTRIBUTES"; else rm -f "$GITATTRIBUTES.tmp" "$GITATTRIBUTES"; fi
+    log ".gitattributes: prompt-todo lines removed"
+  fi
+fi
 
 # Empty directories left behind.
 if [ "$DRY" = 0 ]; then

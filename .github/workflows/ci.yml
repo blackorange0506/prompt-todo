@@ -5,18 +5,28 @@ on:
 jobs:
   test:
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash   # Git Bash on Windows — the shell Claude Code uses there
     steps:
       - uses: actions/checkout@v4
       - name: tools
         run: |
-          if [ "$RUNNER_OS" = "Linux" ]; then sudo apt-get update -q && sudo apt-get install -y -q shellcheck jq; else brew install shellcheck jq; fi
-          bash --version | head -1; /bin/bash --version | head -1; python3 --version
+          case "$RUNNER_OS" in
+            Linux)   sudo apt-get update -q && sudo apt-get install -y -q shellcheck jq ;;
+            macOS)   brew install shellcheck jq ;;
+            Windows) echo "no jq on purpose: every hook and config read takes the Python path" ;;
+          esac
+          bash --version | head -1; uname -s
+          command -v python3 || true; command -v python || true; command -v py || true
       - name: banlist
         run: bash scripts/check_banlist.sh
       - name: shellcheck
+        if: runner.os != 'Windows'
         run: bash scripts/lint.sh
       - name: docs in sync
         run: diff -u template/.claude/prompt-todo/README.md docs/todo-workflow.md
@@ -25,3 +35,10 @@ jobs:
       - name: tests (/bin/bash 3.2 on macOS)
         if: runner.os == 'macOS'
         run: /bin/bash tests/run.sh
+      - name: install into a fresh project
+        run: |
+          d="$(mktemp -d)"; cd "$d"; git init -q; git config user.name ci
+          bash "$GITHUB_WORKSPACE/install.sh"
+          echo '{"prompt":"works #4","cwd":"'"$d"'"}' | CLAUDE_PROJECT_DIR="$d" bash .claude/hooks/todo-confirm.sh | grep -q 'item `#4`'
+          bash .claude/prompt-todo/bin/py.sh render_rules.py --check
+          bash "$GITHUB_WORKSPACE/uninstall.sh"

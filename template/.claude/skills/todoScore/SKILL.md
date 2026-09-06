@@ -3,7 +3,7 @@ name: todoScore
 description: "Turn the prompt scores of Prompt TODO on or off — the ` (N/5)` Claude appends to an item line when it rewrites the item to its ideal prompt, rating how close the original prompt was. Writes `promptScores` in .claude/prompt-todo/config.json and re-renders .claude/prompt-todo/RULES.md; touches no todo file. Existing scores stay either way. Runs only when the user invokes it: '/todoScore', '/todoScore on', '/todoScore off'."
 argument-hint: "[on|off]"
 disable-model-invocation: true
-allowed-tools: Read, Edit, AskUserQuestion, Bash(python3 .claude/prompt-todo/bin/render_rules.py:*)
+allowed-tools: Read, Edit, AskUserQuestion, Bash(bash .claude/prompt-todo/bin/py.sh:*)
 ---
 
 # /todoScore
@@ -35,7 +35,7 @@ does not want numbers in its todo files flips the rule here: `off` and no score 
 
 4. **Write** `"promptScores": "<state>"` with the `Edit` tool (add the key before the closing
    brace when it is missing), never the shell. Then re-render:
-   `python3 .claude/prompt-todo/bin/render_rules.py`. Show its one-line output. If it fails,
+   `bash .claude/prompt-todo/bin/py.sh render_rules.py`. Show its one-line output. If it fails,
    show the error and revert the edit.
 
 5. **Reply** in two lines: the new state, and what changes from now on —

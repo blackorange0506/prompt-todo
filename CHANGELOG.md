@@ -2,6 +2,20 @@
 
 ## 0.1.2 — unreleased
 
+- Windows support (native Claude Code with Git for Windows; WSL always worked). Python 3 is
+  found under any of its names — `python3`, `python`, or the `py` launcher — by a resolver in
+  `bin/config.sh` (`prompt_todo_py`) that the installer, the uninstaller and the hook use; the
+  Microsoft Store's `python3` stub and a Python 2 `python` are skipped. New
+  `bin/py.sh` wrapper (`bash .claude/prompt-todo/bin/py.sh render_rules.py`) is the one
+  command the skills, the docs and the permission rules use to run the package scripts on every
+  OS. The hook entry in `settings.json` is now `bash "$CLAUDE_PROJECT_DIR"/.claude/hooks/
+  todo-confirm.sh …` (Git Bash does not run a bare `.sh` path); an entry with the previous
+  default command is upgraded in place on re-install, a command the user rewrote is kept.
+  Backslash paths from Windows are normalised in the hook and the wrapper. The repo carries a
+  `.gitattributes` keeping every text file LF, and `install.sh` adds two lines to the project's
+  `.gitattributes` so the hook and the scripts survive a `core.autocrlf=true` checkout
+  (`uninstall.sh` removes them). CI now also runs on `windows-latest` under Git Bash, without
+  `jq`, and installs into a fresh project on each OS.
 - `/todoFromTicket` no longer puts a `QA:` sub-checkbox under every dev item: a ticket block is
   now the `/appNavigation` item (when there is one), then 1–5 dev items, then 1–5 separate
   `QA:` items with their own ids — the manual checks for the ticket, as many as it needs, not

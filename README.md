@@ -2,7 +2,8 @@
 
 Think of your todo list as:
 - a prompt manager and a prompt tracker;
-- a learning loop for prompting: each finished item comes back as the prompt you should have written;
+- a learning loop for prompting: each finished item comes back as the prompt you should have
+  written, with a `(N/5)` score for the one you did write;
 - the layer between the code base and the project-management system (Jira and friends).
 
 Read [docs/todo-workflow.md](docs/todo-workflow.md) for the whole flow with examples.
@@ -16,6 +17,13 @@ Read [docs/todo-workflow.md](docs/todo-workflow.md) for the whole flow with exam
 git clone https://github.com/<you>/prompt-todo ~/src/prompt-todo
 cd ~/your/project
 bash ~/src/prompt-todo/install.sh          # add --without-app-navigation to skip that placeholder
+```
+
+On Windows run the same two commands from **Git Bash** (the shell Claude Code itself uses there;
+it comes with Git for Windows) — or from WSL, which is plain Linux:
+
+```bash
+bash /c/src/prompt-todo/install.sh
 ```
 
 Then open Claude Code in the project and run:
@@ -38,8 +46,10 @@ on its own (`/todoSetup tracker`); `/todoSetup --yes` takes every default. The f
 works right after `install.sh` with a generic tag table and no tracker; `/todoSetup tags` trims
 the table to the platforms the repo actually contains.
 
-Requirements: bash 3.2+, git, python3. `jq` is used when present. The tracker step needs the
-Atlassian MCP server (Jira) or the `gh` CLI (GitHub Issues).
+Requirements: bash 3.2+ (macOS, Linux, or Git Bash on Windows), git, Python 3 under any of
+its names — `python3`, `python`, or the `py` launcher; the scripts find whichever one works.
+`jq` is used when present. The tracker step needs the Atlassian MCP server (Jira) or the `gh`
+CLI (GitHub Issues).
 
 ## What install.sh does
 
@@ -74,7 +84,8 @@ bash scripts/lint.sh           # shellcheck + py_compile
 bash scripts/check_banlist.sh  # no traces of the project this was extracted from
 ```
 
-CI runs everything on Linux and macOS (the macOS job also runs the tests under `/bin/bash` 3.2).
+CI runs everything on Linux, macOS and Windows (Git Bash, without `jq`, so the Python path is
+what gets tested there; the macOS job also runs the tests under `/bin/bash` 3.2).
 
 ## License
 

@@ -13,11 +13,12 @@
 #   echo '{"prompt":"works"}'     | .claude/hooks/todo-confirm.sh
 #   echo '{"prompt":"works #39"}' | .claude/hooks/todo-confirm.sh
 #
-# Needs jq or python3 (either); bash 3.2 is enough.
+# Needs jq or Python 3 (either; `python3`, `python` or `py -3` — see config.sh); bash 3.2 is
+# enough. Runs under Git Bash on Windows, where BASH_SOURCE may carry backslashes.
 
 set -u
 
-HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]//\\//}")" && pwd)"
 # shellcheck source=../prompt-todo/bin/config.sh
 . "$HERE/../prompt-todo/bin/config.sh"
 
@@ -27,8 +28,8 @@ json_field() {
   # $1 = field name; prints its string value or nothing
   if command -v jq >/dev/null 2>&1; then
     printf '%s' "$input" | jq -r ".$1 // empty" 2>/dev/null
-  elif command -v python3 >/dev/null 2>&1; then
-    printf '%s' "$input" | python3 -c 'import json,sys
+  elif prompt_todo_py_resolve; then
+    printf '%s' "$input" | prompt_todo_py -c 'import json,sys
 try:
     d=json.load(sys.stdin); v=d.get(sys.argv[1]); print(v if isinstance(v,str) else "", end="")
 except Exception:
@@ -112,6 +113,6 @@ if command -v jq >/dev/null 2>&1; then
   jq -n --arg ctx "$context" \
     '{hookSpecificOutput:{hookEventName:"UserPromptSubmit",additionalContext:$ctx}}'
 else
-  python3 -c 'import json,sys
+  prompt_todo_py -c 'import json,sys
 print(json.dumps({"hookSpecificOutput":{"hookEventName":"UserPromptSubmit","additionalContext":sys.argv[1]}}))' "$context"
 fi

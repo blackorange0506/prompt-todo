@@ -1,17 +1,50 @@
 #!/usr/bin/env bash
 # Read values from .claude/prompt-todo/config.json in bash 3.2+, with jq when it exists and
-# python3 otherwise. Source this file, then:
+# Python 3 otherwise. Source this file, then:
 #
 #   prompt_todo_root                       # the project root (CLAUDE_PROJECT_DIR, git toplevel, or cwd)
+#   prompt_todo_py script.py args…       # run Python 3, whatever it is called on this machine
 #   config_get '.projectTitle' 'My App'  # a scalar; the default when the file or key is missing
 #   config_list '.confirmWords'          # one element per line; empty when missing
 #
 # Never fails the caller: a missing or broken config yields the defaults, so the hook and the
 # skills keep working before the wizard has run.
+#
+# Runs on macOS, Linux and Windows (Git Bash / MSYS2 — what Claude Code's Bash tool and hooks
+# use there; WSL is plain Linux). On Windows the interpreter is usually `python` or the `py`
+# launcher rather than `python3`, and paths may arrive with backslashes.
+
+# Backslashes → slashes, so dirname/cd work on a Windows path (`C:\x\y` → `C:/x/y`, which
+# Git Bash accepts). A no-op on Unix paths.
+prompt_todo_slashes() { printf '%s' "${1//\\//}"; }
+
+# Which command runs Python 3 here: `python3` (Unix, Microsoft Store Python), `python`
+# (python.org installers on Windows, some Linux), or the `py -3` launcher (Windows). A
+# candidate counts only if it actually runs and is a 3.x — the Windows Store ships a
+# `python3.exe` stub that only opens the Store, and `python` may be 2.x. Cached in
+# PROMPT_TODO_PY for the process (set it beforehand to force one).
+_prompt_todo_py_ok() { "$@" -c 'import sys; sys.exit(0 if sys.version_info[0] == 3 else 1)' >/dev/null 2>&1; }
+prompt_todo_py_resolve() {
+  if [ -z "${PROMPT_TODO_PY:-}" ]; then
+    if _prompt_todo_py_ok python3; then PROMPT_TODO_PY=python3
+    elif _prompt_todo_py_ok python; then PROMPT_TODO_PY=python
+    elif _prompt_todo_py_ok py -3; then PROMPT_TODO_PY=py
+    else PROMPT_TODO_PY=none
+    fi
+  fi
+  [ "$PROMPT_TODO_PY" != none ]
+}
+prompt_todo_py() {
+  prompt_todo_py_resolve || { echo "prompt-todo: no Python 3 found (tried python3, python, py -3)" >&2; return 127; }
+  case "$PROMPT_TODO_PY" in
+    py) py -3 "$@" ;;
+    *)  "$PROMPT_TODO_PY" "$@" ;;
+  esac
+}
 
 prompt_todo_root() {
   if [ -n "${CLAUDE_PROJECT_DIR:-}" ] && [ -d "$CLAUDE_PROJECT_DIR" ]; then
-    printf '%s' "$CLAUDE_PROJECT_DIR"; return
+    prompt_todo_slashes "$CLAUDE_PROJECT_DIR"; return
   fi
   local top
   top="$(git rev-parse --show-toplevel 2>/dev/null || true)"
@@ -23,12 +56,12 @@ prompt_todo_config_file() {
 }
 
 _config_has_jq() { command -v jq >/dev/null 2>&1; }
-_config_has_py() { command -v python3 >/dev/null 2>&1; }
+_config_has_py() { prompt_todo_py_resolve; }
 
 # Python fallback: walks a jq-style path of the form .a.b.c (no arrays, no filters).
 _config_py() {
   # $1 = mode (get|list), $2 = file, $3 = path
-  python3 - "$1" "$2" "$3" <<'PY' 2>/dev/null
+  prompt_todo_py - "$1" "$2" "$3" <<'PY' 2>/dev/null
 import json, sys
 mode, path, jqpath = sys.argv[1], sys.argv[2], sys.argv[3]
 try:

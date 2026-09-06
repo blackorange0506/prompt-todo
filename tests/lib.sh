@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 # Tiny assertion helpers shared by tests/*.test.sh. No framework.
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]//\\//}")/.." && pwd)"
 TMP_BASE="$ROOT/tests/.tmp"
+# Python 3 by whatever name it has here (python3 / python / py -3): prompt_todo_py.
+. "$ROOT/template/.claude/prompt-todo/bin/config.sh"
+# Git Bash / MSYS2 on Windows: no executable bits, no symlinks, no PATH-restricted bash.
+is_windows() { case "$(uname -s 2>/dev/null)" in MINGW*|MSYS*|CYGWIN*) return 0 ;; *) return 1 ;; esac; }
 mkdir -p "$TMP_BASE"
 FAILS=0
 PASSES=0

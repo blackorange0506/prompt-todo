@@ -6,7 +6,7 @@ Think of your todo file as:
 
 - a prompt manager and a prompt tracker;
 - a learning loop for prompting: each finished item comes back as the prompt you should have
-  written;
+  written, with a `(N/5)` score for the one you did write;
 - the layer between the code base and the project-management system (Jira and friends).
 
 ### Workspace

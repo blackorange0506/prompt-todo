@@ -3,7 +3,7 @@ name: todoMarkCode
 description: "Turn the code markers of Prompt TODO on or off — the `[<name>#N]` tag Claude appends to a comment at each change site so grep leads from code back to the todo item. Writes `codeMarkers` in .claude/prompt-todo/config.json and re-renders .claude/prompt-todo/RULES.md; touches no code and no todo file. Existing markers stay either way. Runs only when the user invokes it: '/todoMarkCode', '/todoMarkCode on', '/todoMarkCode off'."
 argument-hint: "[on|off]"
 disable-model-invocation: true
-allowed-tools: Read, Edit, AskUserQuestion, Bash(python3 .claude/prompt-todo/bin/render_rules.py:*)
+allowed-tools: Read, Edit, AskUserQuestion, Bash(bash .claude/prompt-todo/bin/py.sh:*)
 ---
 
 # /todoMarkCode
@@ -35,7 +35,7 @@ starts again. Nothing already written is touched.
 
 4. **Write** `"codeMarkers": "<state>"` with the `Edit` tool (add the key before the closing
    brace when it is missing), never the shell. Then re-render:
-   `python3 .claude/prompt-todo/bin/render_rules.py`. Show its one-line output. If it fails,
+   `bash .claude/prompt-todo/bin/py.sh render_rules.py`. Show its one-line output. If it fails,
    show the error and revert the edit.
 
 5. **Reply** in two lines: the new state, and what changes from now on —

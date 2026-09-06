@@ -12,7 +12,7 @@ cp "$ROOT/template/.claude/prompt-todo/config.example.json" "$D/.claude/prompt-t
 printf '# My App — TODO\n\n- [ ] #12 Something\n' > "$D/TODO.jd.md"
 
 run_hook() { # prompt [cwd]
-  python3 -c 'import json,sys; print(json.dumps({"prompt": sys.argv[1], "cwd": sys.argv[2]}))' "$1" "${2:-$D}" \
+  prompt_todo_py -c 'import json,sys; print(json.dumps({"prompt": sys.argv[1], "cwd": sys.argv[2]}))' "$1" "${2:-$D}" \
     | ( cd "${2:-$D}" && CLAUDE_PROJECT_DIR="$D" bash "$D/.claude/hooks/todo-confirm.sh" )
 }
 
@@ -22,7 +22,7 @@ assert_contains "works → most recent item"   "$out" 'most recently worked'
 assert_contains "works → names the file"     "$out" 'TODO.jd.md'
 assert_contains "works → file exists note"   "$out" "the current user's todo file"
 assert_contains "works → ignore rows"        "$out" '`QA:` / `Admin:`'
-python3 -c 'import json,sys; json.loads(sys.stdin.read())' <<<"$out" && pass "output is JSON" || fail "output is JSON"
+prompt_todo_py -c 'import json,sys; json.loads(sys.stdin.read())' <<<"$out" && pass "output is JSON" || fail "output is JSON"
 
 out="$(run_hook '  works #12
 ')"
@@ -49,7 +49,7 @@ assert_contains "missing file note"          "$out" 'does not exist'
 printf '# My App — TODO\n' > "$D/TODO.jd.md"
 
 # custom confirm words + no ignore tags
-python3 - "$D/.claude/prompt-todo/config.json" <<'PY'
+prompt_todo_py - "$D/.claude/prompt-todo/config.json" <<'PY'
 import json,sys
 p=sys.argv[1]; c=json.load(open(p)); c["confirmWords"]=["done","ship it"]; c["tags"]["ignore"]=[]; json.dump(c,open(p,"w"))
 PY
@@ -64,10 +64,13 @@ rm "$D/.claude/prompt-todo/config.json"
 out="$(run_hook 'fixed')"
 assert_contains "no config → default words"  "$out" 'TODO CONFIRM TRIGGER'
 
-# python fallback: a PATH without jq
-B="$D/bin"; mkdir -p "$B"
-for t in bash sh python3 git sed cat dirname; do ln -sf "$(command -v $t)" "$B/$t"; done
-out="$(printf '{"prompt":"works","cwd":"%s"}' "$D" | ( cd "$D" && PATH="$B" CLAUDE_PROJECT_DIR="$D" "$B/bash" "$D/.claude/hooks/todo-confirm.sh" ))"
-assert_contains "no jq → python fallback"    "$out" 'TODO CONFIRM TRIGGER'
+# python fallback: a PATH without jq (Unix only — Git Bash cannot run from a bare PATH; the
+# Windows CI job has no jq at all, so every case above already takes the Python path there)
+if ! is_windows; then
+  B="$D/bin"; mkdir -p "$B"
+  for t in bash sh git sed cat dirname "$PROMPT_TODO_PY"; do ln -sf "$(command -v "$t")" "$B/$t"; done
+  out="$(printf '{"prompt":"works","cwd":"%s"}' "$D" | ( cd "$D" && PATH="$B" CLAUDE_PROJECT_DIR="$D" "$B/bash" "$D/.claude/hooks/todo-confirm.sh" ))"
+  assert_contains "no jq → python fallback"    "$out" 'TODO CONFIRM TRIGGER'
+fi
 
 report hook

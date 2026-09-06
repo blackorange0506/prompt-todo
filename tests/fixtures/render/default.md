@@ -2,7 +2,7 @@
 
 <!-- Generated from .claude/prompt-todo/config.json by .claude/prompt-todo/bin/render_rules.py.
      Do not edit by hand: change the config and re-run `/todoSetup rules`
-     (or `python3 .claude/prompt-todo/bin/render_rules.py`). Rules that are specific to your
+     (or `bash .claude/prompt-todo/bin/py.sh render_rules.py`). Rules that are specific to your
      project belong in your own CLAUDE.md, next to the line that imports this file. -->
 
 The human explanation of this flow is `.claude/prompt-todo/README.md`; this file is the

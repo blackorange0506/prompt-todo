@@ -9,7 +9,7 @@
 # the package files and leaves your config, todo files and credentials alone.
 #
 # What it does:
-#   1. preflight: git repo (warning only), python3 (required), jq (optional)
+#   1. preflight: git repo (warning only), Python 3 (required: python3, python or py -3), jq (optional)
 #   2. copies template/.claude/** into <target>/.claude/ (package files, always overwritten)
 #   3. adds the works/fixed hook to <target>/.claude/settings.json (merge, never overwrite)
 #   4. appends `@.claude/prompt-todo/RULES.md` to <target>/CLAUDE.md (created if missing)
@@ -17,12 +17,14 @@
 #   6. writes .claude/prompt-todo/config.json from the example if absent, renders RULES.md,
 #      stamps VERSION and writes MANIFEST (the list uninstall.sh removes)
 #
-# bash 3.2 is enough (macOS /bin/bash).
+# bash 3.2 is enough (macOS /bin/bash); on Windows run it from Git Bash (what Claude Code uses there).
 
 set -eu
 
-SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SRC="$(cd "$(dirname "${BASH_SOURCE[0]//\\//}")" && pwd)"
 TEMPLATE="$SRC/template/.claude"
+# shellcheck source=template/.claude/prompt-todo/bin/config.sh
+. "$TEMPLATE/prompt-todo/bin/config.sh"   # prompt_todo_py: python3 / python / py -3"
 TARGET="$(pwd)"
 WITH_APP_NAV=1
 DRY=0
@@ -57,7 +59,7 @@ TARGET="$(cd "$TARGET" && pwd)"
 
 # ---- 1. preflight -----------------------------------------------------------
 
-command -v python3 >/dev/null 2>&1 || err "python3 is required (it renders the rules and merges settings.json)"
+prompt_todo_py_resolve || err "Python 3 is required (it renders the rules and merges settings.json); none of python3, python, py -3 works here"
 if command -v jq >/dev/null 2>&1; then JQ=1; else JQ=0; fi
 if git -C "$TARGET" rev-parse --show-toplevel >/dev/null 2>&1; then
   GIT_ROOT="$(git -C "$TARGET" rev-parse --show-toplevel)"
@@ -69,7 +71,7 @@ else
 fi
 
 log "installing prompt-todo $(cat "$SRC/VERSION") into $TARGET"
-[ "$JQ" = 1 ] || log "jq not found; the hook and the skills will use python3 instead (fine)"
+[ "$JQ" = 1 ] || log "jq not found; the hook and the skills will use Python ($PROMPT_TODO_PY) instead (fine)"
 
 # Two facts the closing message depends on. Claude Code watches .claude/skills/ for live changes
 # only when the directory existed at session start, so a session that is already open in a project
@@ -123,12 +125,12 @@ BIN="$TEMPLATE/prompt-todo/bin"   # the copy in the target may not exist on --dr
 # ---- 3. hook in settings.json ---------------------------------------------------
 
 SETTINGS="$TARGET/.claude/settings.json"
-if python3 "$BIN/merge_settings.py" "$SETTINGS" --check 2>/dev/null; then
+if prompt_todo_py "$BIN/merge_settings.py" "$SETTINGS" --check 2>/dev/null; then
   log "hook already wired in .claude/settings.json"
 elif [ "$DRY" = 1 ]; then
   dry "add the UserPromptSubmit hook to .claude/settings.json"
 else
-  python3 "$BIN/merge_settings.py" "$SETTINGS"
+  prompt_todo_py "$BIN/merge_settings.py" "$SETTINGS"
 fi
 
 # ---- 4. CLAUDE.md import --------------------------------------------------------
@@ -154,7 +156,7 @@ fi
 
 ATTACH_DIR="todoAttachments"
 if [ -f "$FLOW/config.json" ]; then
-  v="$(python3 -c 'import json,sys
+  v="$(prompt_todo_py -c 'import json,sys
 try: print(json.load(open(sys.argv[1])).get("attachmentsDir") or "")
 except Exception: pass' "$FLOW/config.json" 2>/dev/null || true)"
   [ -n "$v" ] && ATTACH_DIR="$v"
@@ -169,6 +171,21 @@ ensure_ignored() {
   log ".gitignore: $line"
 }
 ensure_ignored "${ATTACH_DIR%/}/"
+
+# ---- 5b. .gitattributes: the scripts must stay LF ----------------------------------
+# A Windows checkout with core.autocrlf=true would turn them into CRLF, which bash cannot run.
+
+GITATTRIBUTES="$TARGET/.gitattributes"
+ensure_attr() {
+  local line="$1"
+  if [ -f "$GITATTRIBUTES" ] && grep -qxF "$line" "$GITATTRIBUTES"; then return; fi
+  if [ "$DRY" = 1 ]; then dry "add '$line' to .gitattributes"; return; fi
+  if [ -f "$GITATTRIBUTES" ] && [ -n "$(tail -c 1 "$GITATTRIBUTES")" ]; then printf '\n' >> "$GITATTRIBUTES"; fi
+  printf '%s\n' "$line" >> "$GITATTRIBUTES"
+  log ".gitattributes: $line"
+}
+ensure_attr ".claude/hooks/*.sh text eol=lf"
+ensure_attr ".claude/prompt-todo/bin/* text eol=lf"
 
 # ---- 6. config, rules, version, manifest -------------------------------------------
 
@@ -192,8 +209,8 @@ elif [ ! -f "$FLOW/config.json" ]; then
   cp "$FLOW/config.example.json" "$FLOW/config.json"
   log "config.json written with the defaults (edit it with /todoSetup)"
 fi
-python3 "$FLOW/bin/render_rules.py" --check >/dev/null || err "config.json is invalid; fix it or re-run with --force"
-python3 "$FLOW/bin/render_rules.py" >/dev/null
+prompt_todo_py "$FLOW/bin/render_rules.py" --check >/dev/null || err "config.json is invalid; fix it or re-run with --force"
+prompt_todo_py "$FLOW/bin/render_rules.py" >/dev/null
 cp "$SRC/VERSION" "$FLOW/VERSION"
 LC_ALL=C sort -u "$MANIFEST_TMP" > "$FLOW/MANIFEST"
 log "rules rendered to .claude/prompt-todo/RULES.md"

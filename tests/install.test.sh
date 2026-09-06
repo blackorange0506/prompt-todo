@@ -30,7 +30,8 @@ assert_file "hook copied"            "$D/.claude/hooks/todo-confirm.sh"
 assert_file "skill copied"           "$D/.claude/skills/todoIdealPrompt/SKILL.md"
 assert_file "renamed skill copied"   "$D/.claude/skills/todoIdealAll/SKILL.md"
 assert_file "detect script copied"   "$D/.claude/prompt-todo/bin/detect_platforms.py"
-[ -x "$D/.claude/prompt-todo/bin/detect_platforms.py" ] && pass "detect script executable" || fail "detect script executable"
+is_windows || { [ -x "$D/.claude/prompt-todo/bin/detect_platforms.py" ] && pass "detect script executable" || fail "detect script executable"; }
+assert_file "py wrapper copied"      "$D/.claude/prompt-todo/bin/py.sh"
 assert_eq "VERSION stamped" "$(cat "$ROOT/VERSION")" "$(cat "$D/.claude/prompt-todo/VERSION")"
 assert_eq "import line once"   "1" "$(count_in_file '@.claude/prompt-todo/RULES.md' "$D/CLAUDE.md")"
 assert_contains "CLAUDE.md content kept" "$(cat "$D/CLAUDE.md")" 'Keep the build green.'
@@ -39,14 +40,17 @@ assert_eq "other hook kept"    "1" "$(count_in_file 'echo other-hook' "$D/.claud
 assert_eq "permissions kept"   "1" "$(count_in_file 'Bash(ls:*)' "$D/.claude/settings.json")"
 assert_eq "gitignore attachments" "1" "$(count_in_file 'todoAttachments/' "$D/.gitignore")"
 assert_eq "gitignore build kept"  "1" "$(count_in_file 'build/' "$D/.gitignore")"
-[ -x "$D/.claude/hooks/todo-confirm.sh" ] && pass "hook executable" || fail "hook executable"
+is_windows || { [ -x "$D/.claude/hooks/todo-confirm.sh" ] && pass "hook executable" || fail "hook executable"; }
+assert_eq "hook command runs through bash" "1" "$(count_in_file 'bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/todo-confirm.sh' "$D/.claude/settings.json")"
+assert_eq "gitattributes: hook LF"    "1" "$(count_in_file '.claude/hooks/*.sh text eol=lf' "$D/.gitattributes")"
+assert_eq "gitattributes: bin LF"     "1" "$(count_in_file '.claude/prompt-todo/bin/* text eol=lf' "$D/.gitattributes")"
 
 # the installed hook runs from the installed tree
 out="$(printf '{"prompt":"works #4","cwd":"%s"}' "$D" | ( cd "$D" && CLAUDE_PROJECT_DIR="$D" bash "$D/.claude/hooks/todo-confirm.sh" ))"
 assert_contains "installed hook fires" "$out" 'item `#4`'
 
 # a user edit to config survives the re-install, package files are refreshed
-python3 - "$D/.claude/prompt-todo/config.json" <<'PY'
+prompt_todo_py - "$D/.claude/prompt-todo/config.json" <<'PY'
 import json,sys
 p=sys.argv[1]; c=json.load(open(p)); c["projectTitle"]="Edited"; json.dump(c,open(p,"w"))
 PY
@@ -62,6 +66,7 @@ assert_contains "upgrade names the removed skill" "$out" 'renamed to todoIdealAl
 assert_eq "import line still once"     "1" "$(count_in_file '@.claude/prompt-todo/RULES.md' "$D/CLAUDE.md")"
 assert_eq "hook still once"            "1" "$(count_in_file 'todo-confirm.sh' "$D/.claude/settings.json")"
 assert_eq "gitignore line still once"  "1" "$(count_in_file 'todoAttachments/' "$D/.gitignore")"
+assert_eq "gitattributes line still once" "1" "$(count_in_file '.claude/hooks/*.sh text eol=lf' "$D/.gitattributes")"
 assert_contains "re-rendered with the edited title" "$(cat "$D/.claude/prompt-todo/RULES.md")" '# Edited — TODO'
 
 # --force resets config with a backup
@@ -88,6 +93,22 @@ assert_file    "todo file kept"       "$D/TODO.jd.md"
 assert_eq "import line removed" "0" "$(count_in_file '@.claude/prompt-todo/RULES.md' "$D/CLAUDE.md")"
 assert_contains "CLAUDE.md content kept after uninstall" "$(cat "$D/CLAUDE.md")" 'Keep the build green.'
 assert_eq "hook entry removed" "0" "$(count_in_file 'todo-confirm.sh' "$D/.claude/settings.json")"
+assert_eq "gitattributes lines removed" "" "$(grep -F 'text eol=lf' "$D/.gitattributes" 2>/dev/null || true)"
 assert_eq "other hook survives" "1" "$(count_in_file 'echo other-hook' "$D/.claude/settings.json")"
-python3 -c 'import json,sys; json.load(open(sys.argv[1]))' "$D/.claude/settings.json" && pass "settings still JSON" || fail "settings still JSON"
+prompt_todo_py -c 'import json,sys; json.load(open(sys.argv[1]))' "$D/.claude/settings.json" && pass "settings still JSON" || fail "settings still JSON"
+
+# an install from before 0.1.2 wired the hook without the bash prefix: upgraded in place, once
+U="$(new_tmp install-upgrade)"; ( cd "$U" && git init -q )
+mkdir -p "$U/.claude"
+cat > "$U/.claude/settings.json" <<'JSON'
+{"hooks":{"UserPromptSubmit":[{"hooks":[{"type":"command","command":"\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/todo-confirm.sh 2>/dev/null || true","timeout":10}]}]}}
+JSON
+out="$(env -u CLAUDECODE bash "$ROOT/install.sh" --target "$U" 2>&1)" || fail "upgrade install rc" "$out"
+assert_eq "old hook command upgraded"  "1" "$(count_in_file 'bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/todo-confirm.sh' "$U/.claude/settings.json")"
+assert_eq "old hook command not duplicated" "1" "$(count_in_file 'todo-confirm.sh' "$U/.claude/settings.json")"
+# a command the user rewrote is left alone
+printf '{"hooks":{"UserPromptSubmit":[{"hooks":[{"type":"command","command":"my-wrapper todo-confirm.sh"}]}]}}\n' > "$U/.claude/settings.json"
+out="$(env -u CLAUDECODE bash "$ROOT/install.sh" --target "$U" 2>&1)" || fail "custom-hook install rc" "$out"
+assert_eq "custom hook command kept" "1" "$(count_in_file 'my-wrapper todo-confirm.sh' "$U/.claude/settings.json")"
+assert_eq "custom hook not duplicated" "1" "$(count_in_file 'todo-confirm.sh' "$U/.claude/settings.json")"
 report install

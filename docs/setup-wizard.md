@@ -13,13 +13,13 @@ step shows the current value, offers **Skip**, and can be run again later on its
 
 Everything the wizard writes goes to `.claude/prompt-todo/config.json`; after each change it
 re-renders `.claude/prompt-todo/RULES.md`, the file Claude actually follows. You can also edit
-the config by hand and run `python3 .claude/prompt-todo/bin/render_rules.py` yourself.
+the config by hand and run `bash .claude/prompt-todo/bin/py.sh render_rules.py` yourself.
 
 | # | step            | asks                                                                 | writes                                   | skipped means                                                |
 |---|-----------------|----------------------------------------------------------------------|------------------------------------------|--------------------------------------------------------------|
 | 1 | `todo`          | project title; confirms `git config user.name` (offers to set it); create `TODO.<name>.md` now? | `projectTitle`; the todo file           | title stays `My App` or what it was; the first `#new` prompt asks about the file again |
 | 2 | `tags`          | nothing when the repo says what it is: detects the platforms (Gradle, Xcode, `package.json`, Maven, CMake …) and writes the matching table; one platform question only when nothing is detected | `tags`  | `Docs:` / `Infra:` only (with `--yes`) |
-| 3 | `rules`         | nothing — renders, then checks the `CLAUDE.md` import, the hook entry, jq/python3, and pipe-tests the hook | `RULES.md`; offers to repair the import and the hook | —                                        |
+| 3 | `rules`         | nothing — renders, then checks the `CLAUDE.md` import, the hook entry, jq/Python, and pipe-tests the hook | `RULES.md`; offers to repair the import and the hook | —                                        |
 | 4 | `tracker`       | Jira (Atlassian MCP) / GitHub Issues (gh) / none; host + project keys or `owner/repo`; runs the connection check and a test fetch | `tracker`                | `/todoFromTicket` works only with pasted ticket text; the ticket-key input of app navigation is unavailable |
 | 5 | `appNavigation` | Skip (default) or connect an existing skill (the shipped placeholder included)      | `appNavigation.mode` + `skill`           | ticket context blocks stay as plain sub-bullets of the first dev item; implement the skill later and re-run this step |
 | 6 | `permissions`   | add allow rules to `.claude/settings.local.json` for what the skills run          | `settings.local.json`                    | Claude Code asks on each of those commands                   |

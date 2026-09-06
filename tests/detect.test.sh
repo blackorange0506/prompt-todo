@@ -17,8 +17,8 @@ touch "$D/multi/app/src/main/AndroidManifest.xml"
 printf '{"devDependencies":{"electron":"30"}}\n' > "$D/electron/package.json"
 printf '{"dependencies":{"react":"18"}}\n' > "$D/skipped/node_modules/x/package.json"
 
-platforms() { python3 "$DETECT" --root "$1" --json | python3 -c 'import json,sys; print(",".join(json.load(sys.stdin)["platforms"]))'; }
-tags()      { python3 "$DETECT" --root "$1" --tags | python3 -c 'import json,sys; t=json.load(sys.stdin); print(",".join(r["tag"] for r in t["list"]) + "|" + t["default"] + "|" + ",".join(t["ignore"]))'; }
+platforms() { prompt_todo_py "$DETECT" --root "$1" --json | prompt_todo_py -c 'import json,sys; print(",".join(json.load(sys.stdin)["platforms"]))'; }
+tags()      { prompt_todo_py "$DETECT" --root "$1" --tags | prompt_todo_py -c 'import json,sys; t=json.load(sys.stdin); print(",".join(r["tag"] for r in t["list"]) + "|" + t["default"] + "|" + ",".join(t["ignore"]))'; }
 
 assert_eq "android manifest"        "Android"      "$(platforms "$D/android")"
 assert_eq "android gradle plugin"   "Android"      "$(platforms "$D/gradle-android")"
@@ -31,23 +31,23 @@ assert_eq "electron is desktop"     "Desktop"      "$(platforms "$D/electron")"
 assert_eq "android + ios"           "Android,IOS"  "$(platforms "$D/multi")"
 assert_eq "empty repo"              ""             "$(platforms "$D/empty")"
 assert_eq "node_modules skipped"    ""             "$(platforms "$D/skipped")"
-assert_eq "plain output"            "no platform detected" "$(python3 "$DETECT" --root "$D/empty")"
-assert_contains "plain output names evidence" "$(python3 "$DETECT" --root "$D/android")" 'Android  app/src/main/AndroidManifest.xml'
+assert_eq "plain output"            "no platform detected" "$(prompt_todo_py "$DETECT" --root "$D/empty")"
+assert_contains "plain output names evidence" "$(prompt_todo_py "$DETECT" --root "$D/android")" 'Android  app/src/main/AndroidManifest.xml'
 
 assert_eq "tags: single platform"   "Android,Docs,Infra|" "$(tags "$D/android" | sed 's/|QA,Admin$//')"
 assert_eq "tags: two platforms get + rows" "Android,IOS,Android+,IOS+,Docs,Infra" "$(tags "$D/multi" | cut -d'|' -f1)"
 assert_eq "tags: web brings browsers" "Web,MobileWeb,Chrome,Safari,Firefox,Edge,Docs,Infra" "$(tags "$D/web" | cut -d'|' -f1)"
 assert_eq "tags: nothing detected"  "Docs,Infra"   "$(tags "$D/empty" | cut -d'|' -f1)"
 assert_eq "tags: no default, ignore rows" "|QA,Admin" "$(tags "$D/android" | cut -d'|' -f2-)"
-assert_eq "tags: by hand"           "Android,Backend,Android+,Backend+,Docs,Infra" "$(python3 "$DETECT" --tags Android Backend | python3 -c 'import json,sys; print(",".join(r["tag"] for r in json.load(sys.stdin)["list"]))')"
-if python3 "$DETECT" --tags Foo >/dev/null 2>&1; then fail "unknown platform accepted"; else pass "unknown platform refused"; fi
-out="$(python3 "$DETECT" --root "$D/android" --tags)"
+assert_eq "tags: by hand"           "Android,Backend,Android+,Backend+,Docs,Infra" "$(prompt_todo_py "$DETECT" --tags Android Backend | prompt_todo_py -c 'import json,sys; print(",".join(r["tag"] for r in json.load(sys.stdin)["list"]))')"
+if prompt_todo_py "$DETECT" --tags Foo >/dev/null 2>&1; then fail "unknown platform accepted"; else pass "unknown platform refused"; fi
+out="$(prompt_todo_py "$DETECT" --root "$D/android" --tags)"
 assert_not_contains "no All tag"    "$out" '"All"'
 
 # the tag object is what render_rules.py accepts
-python3 - "$ROOT/template/.claude/prompt-todo/config.example.json" "$D/cfg.json" "$out" <<'PY'
+prompt_todo_py - "$ROOT/template/.claude/prompt-todo/config.example.json" "$D/cfg.json" "$out" <<'PY'
 import json,sys
 c=json.load(open(sys.argv[1])); c["tags"]=json.loads(sys.argv[3]); json.dump(c,open(sys.argv[2],"w"))
 PY
-if python3 "$ROOT/template/.claude/prompt-todo/bin/render_rules.py" --config "$D/cfg.json" --check >/dev/null 2>&1; then pass "tag object validates"; else fail "tag object validates"; fi
+if prompt_todo_py "$ROOT/template/.claude/prompt-todo/bin/render_rules.py" --config "$D/cfg.json" --check >/dev/null 2>&1; then pass "tag object validates"; else fail "tag object validates"; fi
 report detect
