@@ -172,6 +172,8 @@ section 1 is what it looks like):
   They are your rows: Claude never works or ticks them, you tick them once a check passes.
 - A ticket that is one task gets one item. Nothing is invented beyond the ticket.
 
+The whole skill, step by step: `docs/todo-from-ticket.md` in the prompt-todo repository.
+
 Then it is the ordinary flow:
 
 ```

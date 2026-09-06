@@ -6,7 +6,7 @@ Think of your todo file as:
 
 - a prompt manager and a prompt tracker;
 - a learning loop for prompting: each finished item comes back as the prompt you should have
-  written;
+  written, with a `(N/5)` score for the one you did write;
 - the layer between the code base and the project-management system (Jira and friends).
 
 ### Workspace
@@ -171,6 +171,8 @@ section 1 is what it looks like):
   on the device and what you must see — covering the ticket as a whole, not one per dev item.
   They are your rows: Claude never works or ticks them, you tick them once a check passes.
 - A ticket that is one task gets one item. Nothing is invented beyond the ticket.
+
+The whole skill, step by step: `docs/todo-from-ticket.md` in the prompt-todo repository.
 
 Then it is the ordinary flow:
 

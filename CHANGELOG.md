@@ -21,7 +21,8 @@
   `QA:` items with their own ids — the manual checks for the ticket, as many as it needs, not
   one per dev item. They are ordinary `QA:` ignore rows: Claude never works or ticks them, the
   user does. The confirm word ticks only the dev item; the rules, the hook, `/todoIdealPrompt`,
-  `/todoIdealAll` and `/todoArchive` drop the sub-checkbox handling.
+  `/todoIdealAll` and `/todoArchive` drop the sub-checkbox handling. New `docs/todo-from-ticket.md`
+  documents the skill end to end.
 - Prompt scores: every rewrite of an item to its ideal prompt (confirm word, `/todoIdealPrompt
   --replace`, `/todoIdealAll`, `/todoReverse`) now appends ` (N/5)` to the item line — how close
   the original prompt was to the ideal one, 5 = already ideal, 1 = the result came from the
