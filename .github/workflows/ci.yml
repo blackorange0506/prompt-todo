@@ -1,0 +1,27 @@
+name: ci
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: tools
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then sudo apt-get update -q && sudo apt-get install -y -q shellcheck jq; else brew install shellcheck jq; fi
+          bash --version | head -1; /bin/bash --version | head -1; python3 --version
+      - name: banlist
+        run: bash scripts/check_banlist.sh
+      - name: shellcheck
+        run: bash scripts/lint.sh
+      - name: docs in sync
+        run: diff -u template/.claude/prompt-todo/README.md docs/todo-workflow.md
+      - name: tests (system bash)
+        run: bash tests/run.sh
+      - name: tests (/bin/bash 3.2 on macOS)
+        if: runner.os == 'macOS'
+        run: /bin/bash tests/run.sh

@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "projectTitle": "My App",
+  "tags": {
+    "default": "",
+    "list": [
+      {"tag": "Android", "meaning": "Android app only"},
+      {"tag": "IOS", "meaning": "iOS app only"},
+      {"tag": "Web", "meaning": "web frontend in a desktop browser"},
+      {"tag": "MobileWeb", "meaning": "web frontend in a phone browser"},
+      {"tag": "Backend", "meaning": "backend / API only"},
+      {"tag": "Desktop", "meaning": "desktop app (macOS / Windows / Linux)"},
+      {"tag": "Docs", "meaning": "documentation only"},
+      {"tag": "Infra", "meaning": "build, CI, tooling"}
+    ],
+    "ignore": ["QA", "Admin"]
+  },
+  "confirmWords": ["works", "fixed", "works, fixed"],
+  "tracker": {
+    "kind": "none",
+    "jira": {
+      "host": "yourcompany.atlassian.net",
+      "projectKeys": ["PROJ"]
+    },
+    "github": {
+      "repo": "owner/repo"
+    }
+  },
+  "attachmentsDir": "todoAttachments",
+  "appNavigation": {
+    "mode": "none",
+    "skill": "appNavigation"
+  },
+  "codeMarkers": "on",
+  "promptScores": "on"
+}
