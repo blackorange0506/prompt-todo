@@ -41,8 +41,8 @@ usage() {
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --target) [ $# -ge 2 ] || err "--target needs a directory"; TARGET="$2"; shift 2 ;;
-    --target=*) TARGET="${1#--target=}"; shift ;;
+    --target) [ $# -ge 2 ] || err "--target needs a directory"; TARGET="$(prompt_todo_slashes "$2")"; shift 2 ;;
+    --target=*) TARGET="$(prompt_todo_slashes "${1#--target=}")"; shift ;;
     --without-app-navigation) WITH_APP_NAV=0; shift ;;
     --with-app-navigation) WITH_APP_NAV=1; shift ;;
     --dry-run) DRY=1; shift ;;
@@ -62,7 +62,8 @@ TARGET="$(cd "$TARGET" && pwd)"
 prompt_todo_py_resolve || err "Python 3 is required (it renders the rules and merges settings.json); none of python3, python, py -3 works here"
 if command -v jq >/dev/null 2>&1; then JQ=1; else JQ=0; fi
 if git -C "$TARGET" rev-parse --show-toplevel >/dev/null 2>&1; then
-  GIT_ROOT="$(git -C "$TARGET" rev-parse --show-toplevel)"
+  # cd && pwd: Git for Windows prints C:/x/y while Git Bash's pwd says /c/x/y; compare like with like.
+  GIT_ROOT="$(cd "$(git -C "$TARGET" rev-parse --show-toplevel)" && pwd)"
   [ "$GIT_ROOT" = "$TARGET" ] || warn "target $TARGET is inside the git repo $GIT_ROOT but is not its root; todo files are looked up at the repo root"
   NAME="$(git -C "$TARGET" config user.name 2>/dev/null || true)"
   [ -n "$NAME" ] || warn "git config user.name is empty — set it (git config user.name <name>) before the first todo prompt; /todoSetup offers to"

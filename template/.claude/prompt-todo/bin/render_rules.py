@@ -253,10 +253,12 @@ def main():
     except FileNotFoundError:
         fail("template not found: %s" % a.template)
     text = render(cfg, template)
+    # Bytes / newline="\n": Windows Python would otherwise turn every \n into \r\n (pipes included),
+    # and the tree is LF everywhere (.gitattributes, the render snapshots).
     if a.stdout:
-        sys.stdout.write(text)
+        sys.stdout.buffer.write(text.encode("utf-8"))
         return
-    with open(a.out, "w", encoding="utf-8") as f:
+    with open(a.out, "w", encoding="utf-8", newline="\n") as f:
         f.write(text)
     print("[render_rules] wrote %s" % a.out)
 

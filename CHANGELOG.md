@@ -15,7 +15,10 @@
   `.gitattributes` keeping every text file LF, and `install.sh` adds two lines to the project's
   `.gitattributes` so the hook and the scripts survive a `core.autocrlf=true` checkout
   (`uninstall.sh` removes them). CI now also runs on `windows-latest` under Git Bash, without
-  `jq`, and installs into a fresh project on each OS.
+  `jq`, and installs into a fresh project on each OS. The Python scripts write LF on Windows too
+  (`RULES.md`, `settings.json`, the `--stdout` render the snapshot tests compare; Windows Python
+  would otherwise write CRLF), and `install.sh` no longer warns "is not its root" on every
+  Windows install (Git for Windows prints `C:/…` where Git Bash's `pwd` says `/c/…`).
 - `/todoFromTicket` no longer puts a `QA:` sub-checkbox under every dev item: a ticket block is
   now the `/appNavigation` item (when there is one), then 1–5 dev items, then 1–5 separate
   `QA:` items with their own ids — the manual checks for the ticket, as many as it needs, not

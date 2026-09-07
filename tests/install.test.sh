@@ -23,6 +23,7 @@ assert_contains "dry-run notes the new skills dir" "$out" '.claude/skills/ is ne
 out="$(CLAUDECODE=1 bash "$ROOT/install.sh" --target "$D" 2>&1)" || fail "install rc" "$out"
 assert_contains "in-session install says restart"  "$out" 'start it again in'
 assert_contains "in-session install names the symptom" "$out" 'Unknown command: /todoSetup'
+assert_not_contains "no false root warning" "$out" 'is not its root'   # Windows: C:/… vs /c/… must compare equal
 assert_file "RULES.md rendered"      "$D/.claude/prompt-todo/RULES.md"
 assert_file "config.json written"    "$D/.claude/prompt-todo/config.json"
 assert_file "MANIFEST written"       "$D/.claude/prompt-todo/MANIFEST"
@@ -44,6 +45,10 @@ is_windows || { [ -x "$D/.claude/hooks/todo-confirm.sh" ] && pass "hook executab
 assert_eq "hook command runs through bash" "1" "$(count_in_file 'bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/todo-confirm.sh' "$D/.claude/settings.json")"
 assert_eq "gitattributes: hook LF"    "1" "$(count_in_file '.claude/hooks/*.sh text eol=lf' "$D/.gitattributes")"
 assert_eq "gitattributes: bin LF"     "1" "$(count_in_file '.claude/prompt-todo/bin/* text eol=lf' "$D/.gitattributes")"
+# The Python scripts must write LF on Windows too (default text mode there writes CRLF).
+CR="$(printf '\r')"
+assert_eq "RULES.md is LF"       "0" "$(grep -c "$CR" "$D/.claude/prompt-todo/RULES.md" || true)"
+assert_eq "settings.json is LF"  "0" "$(grep -c "$CR" "$D/.claude/settings.json" || true)"
 
 # the installed hook runs from the installed tree
 out="$(printf '{"prompt":"works #4","cwd":"%s"}' "$D" | ( cd "$D" && CLAUDE_PROJECT_DIR="$D" bash "$D/.claude/hooks/todo-confirm.sh" ))"

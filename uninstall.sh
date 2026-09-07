@@ -23,8 +23,8 @@ dry()  { printf '\033[0;35m[dry-run]\033[0m %s\n' "$*"; }
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --target) [ $# -ge 2 ] || err "--target needs a directory"; TARGET="$2"; shift 2 ;;
-    --target=*) TARGET="${1#--target=}"; shift ;;
+    --target) [ $# -ge 2 ] || err "--target needs a directory"; TARGET="${2//\\//}"; shift 2 ;;
+    --target=*) TARGET="${1#--target=}"; TARGET="${TARGET//\\//}"; shift ;;
     --keep-config) KEEP_CONFIG=1; shift ;;
     --dry-run) DRY=1; shift ;;
     -h|--help) sed -n '2,/^$/p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
@@ -37,10 +37,17 @@ FLOW="$TARGET/.claude/prompt-todo"
 [ -f "$FLOW/MANIFEST" ] || err "no .claude/prompt-todo/MANIFEST in $TARGET — nothing installed here (or an older install; delete .claude/prompt-todo, .claude/hooks/todo-confirm.sh and .claude/skills/todo* by hand)"
 
 # Python 3 by whatever name it has here (config.sh's prompt_todo_py); an install older than
-# that helper falls back to python3.
+# that helper falls back to the first of python3 / python / py -3 on PATH.
 # shellcheck source=template/.claude/prompt-todo/bin/config.sh
 [ -f "$FLOW/bin/config.sh" ] && . "$FLOW/bin/config.sh"
-command -v prompt_todo_py >/dev/null 2>&1 || prompt_todo_py() { python3 "$@"; }
+if ! command -v prompt_todo_py >/dev/null 2>&1; then
+  prompt_todo_py() {
+    if command -v python3 >/dev/null 2>&1; then python3 "$@"
+    elif command -v python >/dev/null 2>&1; then python "$@"
+    else py -3 "$@"
+    fi
+  }
+fi
 
 rm_file() {
   local f="$TARGET/$1"
@@ -75,7 +82,7 @@ import sys
 p = sys.argv[1]
 lines = open(p, encoding="utf-8").read().split("\n")
 out = [l for l in lines if l.strip() not in ("@.claude/prompt-todo/RULES.md", "# Prompt TODO")]
-open(p, "w", encoding="utf-8").write("\n".join(out))
+open(p, "w", encoding="utf-8", newline="\n").write("\n".join(out))  # LF on Windows too
 PY
     log "CLAUDE.md: import line removed"
   fi

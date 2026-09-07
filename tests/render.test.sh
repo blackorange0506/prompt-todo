@@ -29,6 +29,10 @@ for n in default trimmed jira github appnav markersoff scoresoff; do
 done
 
 out="$(prompt_todo_py "$RENDER" --config "$D/default.json" --template "$TPL" --stdout)"
+# Windows Python turns \n into \r\n unless told not to; the snapshots above would then fail with ^M.
+assert_not_contains "stdout is LF (no CR)" "$out" "$(printf '\r')"
+prompt_todo_py "$RENDER" --config "$D/default.json" --template "$TPL" --out "$D/rules.md" >/dev/null
+assert_eq "written file is LF (no CR)" "0" "$(grep -c "$(printf '\r')" "$D/rules.md" || true)"
 assert_not_contains "no leftover placeholders" "$out" '{{'
 assert_contains "no default tag by default" "$out" 'There is no default tag'
 assert_not_contains "no All tag"        "$out" '`All:`'

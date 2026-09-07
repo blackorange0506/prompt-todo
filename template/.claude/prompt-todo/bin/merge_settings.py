@@ -54,7 +54,7 @@ def save(path, data):
     d = os.path.dirname(path)
     if d and not os.path.isdir(d):
         os.makedirs(d)
-    with open(path, "w", encoding="utf-8") as f:
+    with open(path, "w", encoding="utf-8", newline="\n") as f:   # LF on Windows too
         json.dump(data, f, indent=2)
         f.write("\n")
 
