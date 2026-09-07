@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- `/todoIdealPrompt #N --score`: writes only the original prompt's ` (N/5)` to the item line —
+  the text stays, so an item ticked with `ok` (or kept in the user's own words) still gets its
+  number. The flag is an explicit ask, so it scores even while `/todoScore off` is in force;
+  `--replace` keeps writing the score as before. The Prompt scores rule, the readme and the
+  render snapshots say so.
+
 ## 0.1.4 — 2026-09-08
 
 - The banlist is split: `scripts/banlist.txt` keeps only non-identifying patterns, and an

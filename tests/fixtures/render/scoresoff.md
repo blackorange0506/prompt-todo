@@ -135,13 +135,14 @@ key and the tag survive the rewrite.
 <!-- /prompt-todo:codeMarkers -->
 
 <!-- prompt-todo:promptScores -->
-**Prompt scores — off.** No ` (N/5)` score is written when an item is rewritten; scores already on item lines stay. `/todoScore on` turns them on.
+**Prompt scores — off.** No ` (N/5)` score is written when an item is rewritten; scores already on item lines stay. `/todoIdealPrompt #N --score` still scores that one item on request. `/todoScore on` turns them on.
 <!-- /prompt-todo:promptScores -->
 
 **/todoIdealPrompt.** After a task is confirmed fixed, the `/todoIdealPrompt` skill distills
 the dialog into the prompt that would have produced the result in one try. That skill may edit
 the todo file **only** when invoked with `--replace` (replacing the item's text with the ideal
-prompt); without the flag it prints only.
+prompt) or `--score` (appending the original prompt's ` (N/5)` to the item line, text kept);
+without a flag it prints only.
 
 **/todoIdealAll.** The batch pass: rewrites every session-worked `[x]` item's text to its ideal
 prompt. It may edit the todo file by design; it never renumbers ids (assigning placeholder ids

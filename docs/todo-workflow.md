@@ -31,6 +31,7 @@ Think of your todo file as:
 |----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `/todoFromTicket PROJ-321`       | break a ticket (Jira or other) into 1-5 dev prompts, then 1-5 `QA:` prompts (the manual checks, yours to tick); with the `/appNavigation` skill implemented, a navigation prompt comes first |
 | `/todoIdealPrompt #12 --replace` | rewrite item 12 to the short prompt that would have worked first try, with a `(N/5)` score for the original (`/todoScore on\|off`); `works` / `fixed` run it for you            |
+| `/todoIdealPrompt #12 --score`   | score item 12's prompt only: the `(N/5)` goes on the line, your text stays — also while scores are off                                                                          |
 | `/todoIdealAll`                  | the same for every item finished in this session                                                                                                                                |
 | `/todoReverse [--open]`          | did a prompting in chat with no item? create the item after the fact, markers included; `--open` leaves it unticked for `works`                                                 |
 | `/todoArchive`                   | move done items to the archive file                                                                                                                                             |
@@ -218,7 +219,8 @@ never depends on Claude remembering the rule.
 
 The rewrite also scores the original prompt: ` (3/5)` at the end of the item line, 5 when your
 first prompt already was the ideal one, 1 when the result came from the corrections. Watch the
-numbers climb; `/todoScore off` drops them.
+numbers climb; `/todoScore off` drops them. To keep your own wording and still see the number,
+`/todoIdealPrompt #12 --score` writes just the score — with the scores on or off.
 
 ## 7. Where things live
 

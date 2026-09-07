@@ -40,7 +40,7 @@ does not want numbers in its todo files flips the rule here: `off` and no score 
 
 5. **Reply** in two lines: the new state, and what changes from now on —
    `off`: rewrites append no ` (N/5)`, `/todoIdealPrompt` prints no score, existing scores
-   stay; `on`: every rewrite scores the original prompt again, nothing is scored
+   stay, `/todoIdealPrompt #N --score` still scores one item on request; `on`: every rewrite scores the original prompt again, nothing is scored
    retroactively.
 
 ## Notes
