@@ -105,7 +105,7 @@ def detect(root):
 
     def hit(platform, rel):
         if platform not in found:
-            found[platform] = rel
+            found[platform] = rel.replace(os.sep, "/")   # the same evidence path on Windows
 
     for rel, name in files:
         low = name.lower()

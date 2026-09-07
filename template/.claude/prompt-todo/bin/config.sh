@@ -34,11 +34,14 @@ prompt_todo_py_resolve() {
   fi
   [ "$PROMPT_TODO_PY" != none ]
 }
+# PYTHONUTF8=1: Windows Python would otherwise read config.json and write its output in the
+# console code page (cp1252), which cannot hold the arrows and dashes in the rules and the help
+# texts. PYTHONDONTWRITEBYTECODE=1: no bin/__pycache__ next to the scripts.
 prompt_todo_py() {
   prompt_todo_py_resolve || { echo "prompt-todo: no Python 3 found (tried python3, python, py -3)" >&2; return 127; }
   case "$PROMPT_TODO_PY" in
-    py) py -3 "$@" ;;
-    *)  "$PROMPT_TODO_PY" "$@" ;;
+    py) PYTHONUTF8=1 PYTHONDONTWRITEBYTECODE=1 py -3 "$@" ;;
+    *)  PYTHONUTF8=1 PYTHONDONTWRITEBYTECODE=1 "$PROMPT_TODO_PY" "$@" ;;
   esac
 }
 
@@ -58,10 +61,12 @@ prompt_todo_config_file() {
 _config_has_jq() { command -v jq >/dev/null 2>&1; }
 _config_has_py() { prompt_todo_py_resolve; }
 
-# Python fallback: walks a jq-style path of the form .a.b.c (no arrays, no filters).
+# Python fallback: walks a jq-style path of the form .a.b.c (no arrays, no filters). The
+# `tr` strips the CR that Windows Python puts before every newline it writes to a pipe —
+# without it each confirm word but the last would carry a trailing CR and never match.
 _config_py() {
   # $1 = mode (get|list), $2 = file, $3 = path
-  prompt_todo_py - "$1" "$2" "$3" <<'PY' 2>/dev/null
+  prompt_todo_py - "$1" "$2" "$3" <<'PY' 2>/dev/null | tr -d '\r'
 import json, sys
 mode, path, jqpath = sys.argv[1], sys.argv[2], sys.argv[3]
 try:

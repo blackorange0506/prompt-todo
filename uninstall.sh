@@ -99,8 +99,10 @@ if [ -f "$GITATTRIBUTES" ] && grep -qF '.claude/prompt-todo/bin/* text eol=lf' "
   fi
 fi
 
-# Empty directories left behind.
+# Empty directories left behind (and the bytecode cache a Python without
+# PYTHONDONTWRITEBYTECODE may have written next to the scripts).
 if [ "$DRY" = 0 ]; then
+  rm -rf "$FLOW/bin/__pycache__"
   for d in .claude/skills/todoSetup .claude/skills/todoArchive .claude/skills/todoFromTicket .claude/skills/todoIdealPrompt \
            .claude/skills/todoIdealAll .claude/skills/todoIdealize .claude/skills/todoNumber .claude/skills/todoReverse .claude/skills/todoMarkCode .claude/skills/todoScore .claude/skills/todoHelp .claude/prompt-todo/bin .claude/prompt-todo .claude/hooks .claude/skills/appNavigation .claude/skills; do
     [ -d "$TARGET/$d" ] && rmdir "$TARGET/$d" 2>/dev/null || true
