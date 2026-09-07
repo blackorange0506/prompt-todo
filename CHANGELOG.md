@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.2 — unreleased
+## 0.1.2 — 2026-09-07
 
 - Windows support (native Claude Code with Git for Windows; WSL always worked). Python 3 is
   found under any of its names — `python3`, `python`, or the `py` launcher — by a resolver in
@@ -55,7 +55,7 @@
 - `/todoIdealize` is renamed `/todoIdealAll` (the batch form of `/todoIdealPrompt`); the old name
   is gone everywhere, and `install.sh` removes the old skill directory on upgrade.
 
-## 0.1.1 — unreleased
+## 0.1.1 — never tagged, shipped in 0.1.2
 
 - `install.sh`: when `.claude/skills/` did not exist before the install, the closing message says
   that a Claude Code session already open in the project has to be restarted before `/todoSetup`
