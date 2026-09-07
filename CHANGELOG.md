@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.4 — 2026-09-08
+
+- The banlist is split: `scripts/banlist.txt` keeps only non-identifying patterns, and an
+  optional git-ignored `scripts/banlist.local.txt` holds the words that would identify the
+  project the flow was extracted from; `check_banlist.sh` reads both when the second exists.
+
 ## 0.1.3 — 2026-09-07
 
 - Windows fixes from the first CI run. Every Python run goes through `prompt_todo_py` with

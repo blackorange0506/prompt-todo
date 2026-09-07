@@ -124,6 +124,9 @@ bash scripts/lint.sh           # shellcheck + py_compile
 bash scripts/check_banlist.sh  # no traces of the project this was extracted from
 ```
 
+The banlist has a tracked, non-identifying half (`scripts/banlist.txt`) and an optional
+git-ignored one (`scripts/banlist.local.txt`) that the checker also reads; CI runs the tracked half.
+
 CI runs everything on Linux, macOS and Windows (Git Bash; the Windows runner ships a `jq`, so
 the hook takes the `jq` path there and the `python.test.sh` cases cover the Python path; the
 macOS job also runs the tests under `/bin/bash` 3.2).

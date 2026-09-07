@@ -2,3 +2,4 @@
 node_modules/
 tests/.tmp/
 .idea/
+scripts/banlist.local.txt
