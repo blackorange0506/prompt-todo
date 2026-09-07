@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.3 — 2026-09-07
+
+- Windows fixes from the first CI run. Every Python run goes through `prompt_todo_py` with
+  `PYTHONUTF8=1` (Windows Python read `config.json` and wrote the help texts in cp1252, so
+  `py.sh render_rules.py --help` crashed on the arrows and dashes) and
+  `PYTHONDONTWRITEBYTECODE=1` (no `bin/__pycache__`; `uninstall.sh` also removes one an older
+  install left, which kept `.claude/prompt-todo` from being deleted). The config reader strips the
+  CR that Windows Python writes before each newline in a pipe: with a `config.json` present the
+  hook matched only the last confirm word. `detect_platforms.py` prints evidence paths with
+  forward slashes on Windows too.
+
 ## 0.1.2 — 2026-09-07
 
 - Windows support (native Claude Code with Git for Windows; WSL always worked). Python 3 is

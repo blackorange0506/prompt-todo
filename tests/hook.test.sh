@@ -68,7 +68,7 @@ assert_contains "no config → default words"  "$out" 'TODO CONFIRM TRIGGER'
 # Windows CI job has no jq at all, so every case above already takes the Python path there)
 if ! is_windows; then
   B="$D/bin"; mkdir -p "$B"
-  for t in bash sh git sed cat dirname "$PROMPT_TODO_PY"; do ln -sf "$(command -v "$t")" "$B/$t"; done
+  for t in bash sh git sed cat tr dirname "$PROMPT_TODO_PY"; do ln -sf "$(command -v "$t")" "$B/$t"; done
   out="$(printf '{"prompt":"works","cwd":"%s"}' "$D" | ( cd "$D" && PATH="$B" CLAUDE_PROJECT_DIR="$D" "$B/bash" "$D/.claude/hooks/todo-confirm.sh" ))"
   assert_contains "no jq → python fallback"    "$out" 'TODO CONFIRM TRIGGER'
 fi
