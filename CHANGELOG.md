@@ -8,8 +8,9 @@
   `PYTHONDONTWRITEBYTECODE=1` (no `bin/__pycache__`; `uninstall.sh` also removes one an older
   install left, which kept `.claude/prompt-todo` from being deleted). The config reader strips the
   CR that Windows Python writes before each newline in a pipe: with a `config.json` present the
-  hook matched only the last confirm word. `detect_platforms.py` prints evidence paths with
-  forward slashes on Windows too.
+  hook matched only the last confirm word — and the GitHub Windows runner does carry a `jq`
+  (the 0.1.2 note said otherwise), whose CR LF output is stripped the same way.
+  `detect_platforms.py` prints evidence paths with forward slashes on Windows too.
 
 ## 0.1.2 — 2026-09-07
 

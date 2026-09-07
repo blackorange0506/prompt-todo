@@ -124,8 +124,9 @@ bash scripts/lint.sh           # shellcheck + py_compile
 bash scripts/check_banlist.sh  # no traces of the project this was extracted from
 ```
 
-CI runs everything on Linux, macOS and Windows (Git Bash, without `jq`, so the Python path is
-what gets tested there; the macOS job also runs the tests under `/bin/bash` 3.2).
+CI runs everything on Linux, macOS and Windows (Git Bash; the Windows runner ships a `jq`, so
+the hook takes the `jq` path there and the `python.test.sh` cases cover the Python path; the
+macOS job also runs the tests under `/bin/bash` 3.2).
 
 ## License
 
