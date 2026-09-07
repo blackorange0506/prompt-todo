@@ -27,7 +27,7 @@ input=$(cat)
 json_field() {
   # $1 = field name; prints its string value or nothing
   if command -v jq >/dev/null 2>&1; then
-    printf '%s' "$input" | jq -r ".$1 // empty" 2>/dev/null
+    printf '%s' "$input" | jq -r ".$1 // empty" 2>/dev/null | tr -d '\r'   # Windows jq: CR LF
   elif prompt_todo_py_resolve; then
     printf '%s' "$input" | prompt_todo_py -c 'import json,sys
 try:

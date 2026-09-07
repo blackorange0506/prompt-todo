@@ -61,9 +61,9 @@ prompt_todo_config_file() {
 _config_has_jq() { command -v jq >/dev/null 2>&1; }
 _config_has_py() { prompt_todo_py_resolve; }
 
-# Python fallback: walks a jq-style path of the form .a.b.c (no arrays, no filters). The
-# `tr` strips the CR that Windows Python puts before every newline it writes to a pipe —
-# without it each confirm word but the last would carry a trailing CR and never match.
+# Python fallback: walks a jq-style path of the form .a.b.c (no arrays, no filters).
+# Every reader below ends in `tr -d '\r'`: on Windows both jq and Python put a CR before each
+# newline they write to a pipe, and a confirm word with a trailing CR never matches.
 _config_py() {
   # $1 = mode (get|list), $2 = file, $3 = path
   prompt_todo_py - "$1" "$2" "$3" <<'PY' 2>/dev/null | tr -d '\r'
@@ -97,7 +97,7 @@ config_get() {
   file="$(prompt_todo_config_file)"
   if [ -f "$file" ]; then
     if _config_has_jq; then
-      out="$(jq -r "$path // empty" "$file" 2>/dev/null || true)"
+      out="$(jq -r "$path // empty" "$file" 2>/dev/null | tr -d '\r' || true)"
     elif _config_has_py; then
       out="$(_config_py get "$file" "$path" || true)"
     fi
@@ -110,7 +110,7 @@ config_list() {
   file="$(prompt_todo_config_file)"
   [ -f "$file" ] || return 0
   if _config_has_jq; then
-    jq -r "($path // []) | .[]" "$file" 2>/dev/null || true
+    jq -r "($path // []) | .[]" "$file" 2>/dev/null | tr -d '\r' || true
   elif _config_has_py; then
     _config_py list "$file" "$path" || true
   fi
