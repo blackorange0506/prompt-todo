@@ -14,6 +14,7 @@ old name, still accepted.
 /todoFromTicket 42                                                  a GitHub issue number
 /todoFromTicket https://github.com/owner/repo/issues/42             or its URL
 /todoFromTicket PROJ-321 --no-attachments                           skip the attachment download
+/todoFromTicket PROJ-321 --deep                                     study the codebase first, then draft
 /todoFromTicket PROJ-321                                            paste mode: the ticket text
 <title, description, acceptance criteria …>                          follows on the next lines
 ```
@@ -38,10 +39,16 @@ A key is required; there is no free-form mode. Which backend reads the ticket is
    `todoAttachments/PROJ-321/`, gitignored; a name collision gets a `(2)`, `(3)` suffix). Images
    and logs are read when they change what the prompts should say. `--no-attachments` and
    paste mode skip this step.
-4. **Opens your todo file** — `TODO.<git user.name>.md` — and runs the usual `#new` numbering
+4. **With `--deep`, studies the codebase first**: a read-only subagent gets the ticket and
+   reports where the surface lives, the likely cause or touch points, the constraints the
+   code imposes and the natural split of the work; the prompts are then drafted from that
+   report. The block in the file is the same — only the prompts are sharper. Without a
+   codebase at hand it says so and drafts as usual.
+5. **Opens your todo file** — `TODO.<git user.name>.md` — and runs the usual `#new` numbering
    pass first, as on any touch.
-5. **Drafts the block** (below) and appends it at the end of the file.
-6. **Replies** with the block, the attachment paths, and one line saying nothing was started.
+6. **Drafts the block** (below) and appends it at the end of the file.
+7. **Replies** with the block, the attachment paths, and one line saying nothing was started;
+   with `--deep`, a few lines first on what the analysis found.
 
 ## The ticket block
 
@@ -75,7 +82,9 @@ Top to bottom:
   in your own style — imperative, one or two lines, naming the surface the way you would, one
   deliverable per item. A tag (`IOS:`, `Android+:` …) only when the ticket names the platform.
   A sub-bullet only for a constraint the ticket states. A ticket that is one task gets one
-  item; nothing beyond the ticket is invented.
+  item; nothing beyond the ticket is invented. With `--deep` the items name the real surface,
+  the split follows the code, and a constraint found in the code may be a sub-bullet — the
+  scope is still the ticket's.
 - **The QA items** (`#35`, `#36`): after the dev items, 1–5 top-level `QA:` rows — the manual
   checks for the ticket: which screen, what to do, what must be seen, derived from the
   acceptance criteria or, failing those, from the dev items. Their number is independent of the
@@ -109,3 +118,4 @@ skipped as duplicates. Ids already given are never renumbered or reused.
 - Never touches another user's `TODO.*.md`.
 - Never writes when the fetch failed.
 - Never invents scope, a navigation spec, or a platform tag the ticket does not contain.
+- Never writes the `--deep` analysis, or the word deep, into the file — only the prompts.

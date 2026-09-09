@@ -30,6 +30,7 @@ Think of your todo file as:
 | Skill                            | What it does                                                                                                                                                                    |
 |----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `/todoFromTicket PROJ-321`       | break a ticket (Jira or other) into 1-5 dev prompts, then 1-5 `QA:` prompts (the manual checks, yours to tick); with the `/appNavigation` skill implemented, a navigation prompt comes first |
+| `/todoFromTicket PROJ-321 --deep` | the same, after a read-only subagent has studied the codebase for the ticket's surface, cause and constraints — sharper prompts, same block                                         |
 | `/todoIdealPrompt #12 --replace` | rewrite item 12 to the short prompt that would have worked first try, with a `(N/5)` score for the original (`/todoScore on\|off`); `works` / `fixed` run it for you            |
 | `/todoIdealPrompt #12 --score`   | score item 12's prompt only: the `(N/5)` goes on the line, your text stays — also while scores are off                                                                          |
 | `/todoIdealAll`                  | the same for every item finished in this session                                                                                                                                |
@@ -151,6 +152,7 @@ archive, and `grep PROJ-321` finds the ticket's items in both files.
 /todoFromTicket PROJ-321                                            the key
 /todoFromTicket https://yourcompany.atlassian.net/browse/PROJ-321   or its URL
 /todoFromTicket PROJ-321 --no-attachments                           skip the attachment download
+/todoFromTicket PROJ-321 --deep                                     study the codebase first, then draft
 ```
 
 Claude fetches the ticket (Jira through the Atlassian MCP server, GitHub Issues through `gh`;
@@ -172,6 +174,8 @@ section 1 is what it looks like):
   on the device and what you must see — covering the ticket as a whole, not one per dev item.
   They are your rows: Claude never works or ticks them, you tick them once a check passes.
 - A ticket that is one task gets one item. Nothing is invented beyond the ticket.
+- `--deep`: a read-only subagent studies the codebase first; the prompts name the real surface
+  and split where the code splits. The file gets the same block, only better prompts.
 
 The whole skill, step by step: `docs/todo-from-ticket.md` in the prompt-todo repository.
 

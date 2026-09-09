@@ -11,7 +11,7 @@ Read [docs/todo-workflow.md](docs/todo-workflow.md) for the whole flow with exam
 ![The todo file and its archive open in the IDE, with several Claude Code terminals working items from it](docs/images/todo-in-ide.png)
 
 *`TODO.<user.name>.md` on the left, the archive on the right, and one Claude Code terminal per item
-below: `/todoFromTicket PROJ-333`, `#57`, `#60 #new1 #new2`, `/todoIdealPrompt #55 --replace`,
+below: `/todoFromTicket PROJ-333`, `#57`, `#59 #new1 #new2`, `/todoIdealPrompt #55 --replace`,
 `/todoArchive`.*
 
 ![Output of /todoHelp: how to work, hold and finish an item, and the table of skills](docs/images/todo-help.png)

@@ -1,8 +1,8 @@
 ---
 name: todoFromTicket
-description: "Turn one ticket into draft prompt items in the user's todo file (TODO.<git user.name>.md, resolved as in the todo rules): fetch the ticket from the configured tracker (Jira via the Atlassian MCP server, GitHub Issues via gh, or the ticket text pasted after the key), download its attachments to <attachmentsDir>/<KEY>/, then append a `## KEY — summary` ticket block with 1–5 numbered dev items, each carrying the ticket key right after its id (`- [ ] #32 PROJ-123 prompt`), then 1–5 `QA:` items (`- [ ] #36 PROJ-123 QA: check …`) — the manual checks for the ticket, the user's own rows that Claude never works or ticks; their number does not follow the dev count. When the ticket ends in a context block (Server / App version / where-in-the-app lines) and an app-navigation skill is connected, that block becomes the ticket block's own first item. Starts no work. Also answers to the old name /todoFromJira. Use whenever the user wants a ticket turned into todo prompts — phrases like '/todoFromTicket PROJ-123', '/todoFromTicket <ticket-url>', '/todoFromTicket 42' (a GitHub issue), '/todoFromJira PROJ-123', 'make prompts from PROJ-123', 'add PROJ-123 to my todo', 'todo from ticket', 'draft prompts for this ticket'. This skill IS allowed to edit the user's todo file; that is its purpose."
-argument-hint: "<KEY | issue-number | url> [--no-attachments] [pasted ticket text]"
-allowed-tools: Read, Edit, Write, Glob, Grep, Bash(git config:*), Bash(gh:*), Bash(curl:*), Bash(mkdir:*), Bash(bash .claude/prompt-todo/bin/py.sh:*), Bash(jq:*), mcp__atlassian__getJiraIssue, mcp__atlassian__fetch, mcp__atlassian__search
+description: "Turn one ticket into draft prompt items in the user's todo file (TODO.<git user.name>.md, resolved as in the todo rules): fetch the ticket from the configured tracker (Jira via the Atlassian MCP server, GitHub Issues via gh, or the ticket text pasted after the key), download its attachments to <attachmentsDir>/<KEY>/, then append a `## KEY — summary` ticket block with 1–5 numbered dev items, each carrying the ticket key right after its id (`- [ ] #32 PROJ-123 prompt`), then 1–5 `QA:` items (`- [ ] #36 PROJ-123 QA: check …`) — the manual checks for the ticket, the user's own rows that Claude never works or ticks; their number does not follow the dev count. When the ticket ends in a context block (Server / App version / where-in-the-app lines) and an app-navigation skill is connected, that block becomes the ticket block's own first item. Starts no work. With --deep, the ticket is first handed to a read-only subagent that studies the codebase — where the ticket's surface lives, the likely cause or touch points, constraints the code imposes, the natural split of the work — and the prompts are drafted from that analysis; the file gets the same block, only sharper prompts, never the analysis itself. Also answers to the old name /todoFromJira. Use whenever the user wants a ticket turned into todo prompts — phrases like '/todoFromTicket PROJ-123', '/todoFromTicket <ticket-url>', '/todoFromTicket 42' (a GitHub issue), '/todoFromJira PROJ-123', 'make prompts from PROJ-123', 'add PROJ-123 to my todo', 'todo from ticket', 'draft prompts for this ticket'. This skill IS allowed to edit the user's todo file; that is its purpose."
+argument-hint: "<KEY | issue-number | url> [--no-attachments] [--deep] [pasted ticket text]"
+allowed-tools: Read, Edit, Write, Glob, Grep, Agent, Bash(git config:*), Bash(gh:*), Bash(curl:*), Bash(mkdir:*), Bash(bash .claude/prompt-todo/bin/py.sh:*), Bash(jq:*), mcp__atlassian__getJiraIssue, mcp__atlassian__fetch, mcp__atlassian__search
 ---
 
 # /todoFromTicket
@@ -22,7 +22,7 @@ Read once per run from `.claude/prompt-todo/config.json`:
 | `tracker.jira.host`    | accepted in ticket URLs; `projectKeys` are the keys recognised bare  |
 | `tracker.github.repo`  | `owner/repo` for `gh issue view`                                    |
 | `attachmentsDir`       | where attachments go: `<attachmentsDir>/<KEY>/<filename>`           |
-| `appNavigation.mode`   | `existing` → the context block becomes a `/<skill>` item (step 5)   |
+| `appNavigation.mode`   | `existing` → the context block becomes a `/<skill>` item (step 6)   |
 | `appNavigation.skill`  | the skill's name                                                     |
 
 ## Argument forms
@@ -33,6 +33,7 @@ Read once per run from `.claude/prompt-todo/config.json`:
 /todoFromTicket 42                                                # GitHub issue number
 /todoFromTicket https://github.com/owner/repo/issues/42           # GitHub issue URL
 /todoFromTicket PROJ-123 --no-attachments                         # skip the download
+/todoFromTicket PROJ-123 --deep                                   # study the codebase first, then draft
 /todoFromTicket PROJ-123                                          # paste mode: the ticket text
 <pasted title, description, acceptance criteria …>                #   follows on the next lines
 ```
@@ -61,11 +62,40 @@ Read once per run from `.claude/prompt-todo/config.json`:
    file links in the issue body and comments via `curl -L`. Create the directory. Read image
    and log attachments if they change what the prompts should say.
 
-4. **Resolve the user's todo file** — `TODO.<name>.md`, `<name>` from `git config user.name`
+4. **`--deep` only: study the codebase first.** Dispatch one read-only subagent with the
+   Agent tool (the Explore type). Its brief carries the ticket key, summary, description,
+   acceptance criteria and comments as fetched, the attachment paths with the facts read from
+   images and logs that matter, and five questions to answer:
+   1. where the ticket's surface lives — screens, modules, files, functions, with paths;
+   2. for a bug, the likely cause and the code path; for a feature, the touch points;
+   3. constraints the code imposes — the same value computed in two places, a module shared
+      across platforms, tests that cover the area, patterns and utilities to reuse;
+   4. the natural split into deliverables the code suggests (one, if it is one change);
+   5. what the ticket leaves ambiguous, one line each.
+
+   It returns a short report — a few lines per point, paths included — and edits nothing.
+
+   **Draft from the report, not around it** (step 6). The prompts stay in the user's style
+   and inside the ticket's scope, but they name the real surface and, where it helps, the
+   module the user would name; the split follows the code's seams (a ticket that is one
+   change still gets one item); a code-found constraint that changes how the work must be
+   done may become a sub-bullet of the item it affects — one line, in the user's words; the
+   `QA:` items name the exact screen or state the analysis showed. An ambiguity the report
+   raised is not a prompt — say it in the reply instead.
+
+   **Never into the file:** the report, its file lists, or the word "deep". The `> ` excerpt
+   stays the ticket's own words; the block is exactly the one in step 7.
+
+   **Fallbacks:** if no codebase is at hand (the project holds only the todo files) or the
+   subagent fails, say so in one line and draft as without the flag. Paste mode works with
+   `--deep` as with any backend. **Without `--deep`, nothing changes:** the prompts come from
+   the ticket and attachments alone.
+
+5. **Resolve the user's todo file** — `TODO.<name>.md`, `<name>` from `git config user.name`
    (the rule in `.claude/prompt-todo/RULES.md`). Run Autoincrement first, as on any touch. Edit
    tool only.
 
-5. **Draft the prompts.** From the description and attachments, write 1–5 items, each the
+6. **Draft the prompts.** From the description and attachments, write 1–5 items, each the
    *first prompt* for one piece of work, in the user's style: imperative, short (one or two
    lines), naming the surface the way the user would ("the checkout button on iOS", not a
    class name), one deliverable per item. Add a tag from the rules' tag table only when the
@@ -106,7 +136,7 @@ Read once per run from `.claude/prompt-todo/config.json`:
    rewrites or ticks them; the user ticks them once the check passes. Write them complete
    the first time. Skip them for a ticket whose status is already done, and say so.
 
-6. **Write the ticket block** at the end of the todo file (Ids rule for the numbers):
+7. **Write the ticket block** at the end of the todo file (Ids rule for the numbers):
 
    ```markdown
    ## PROJ-321 — Order total wrong after removing a topping
@@ -131,10 +161,13 @@ Read once per run from `.claude/prompt-todo/config.json`:
    If a `## KEY` heading already exists, append only items that are not already there
    (compare intent, not wording) under that heading, and say which were skipped as duplicates.
 
-7. **Reply**: the heading line, the app-navigation item first when there is one, each dev item
+8. **Reply**: the heading line, the app-navigation item first when there is one, each dev item
    with its id, then the QA items with theirs, the attachment paths, and one line saying
    nothing was started — the user works a dev item by typing its `#N`, closes it with a
-   confirm word (`works` / `fixed`), and ticks the QA rows by hand once they pass.
+   confirm word (`works` / `fixed`), and ticks the QA rows by hand once they pass. With
+   `--deep`, two to four lines before the block say what the analysis found — the files the
+   prompts point at, the cause in one clause, the ambiguities — so the user sees why the
+   prompts read as they do.
 
 ## Notes
 
@@ -143,3 +176,5 @@ Read once per run from `.claude/prompt-todo/config.json`:
   in the todo rules, **Ticket blocks**.
 - Never ticks, rewrites or archives anything; never touches other users' files.
 - If the fetch fails, report the error and write nothing (or offer paste mode).
+- `--deep` reads the codebase and never writes to it; the only file this skill touches is
+  still the user's todo file.

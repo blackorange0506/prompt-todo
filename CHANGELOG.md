@@ -7,6 +7,12 @@
   number. The flag is an explicit ask, so it scores even while `/todoScore off` is in force;
   `--replace` keeps writing the score as before. The Prompt scores rule, the readme and the
   render snapshots say so.
+- `/todoFromTicket KEY --deep`: before the prompts are drafted, a read-only subagent studies
+  the codebase for the ticket — where its surface lives, the likely cause or touch points,
+  the constraints the code imposes, the natural split of the work — and the prompts are
+  drafted from that report. The block in the file keeps its shape; only the prompts are
+  sharper, and the analysis itself is shown in the reply alone. The skill, its docs page, the
+  readme skills table and this changelog say so.
 
 ## 0.1.4 — 2026-09-08
 
