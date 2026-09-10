@@ -152,6 +152,9 @@ Read once per run from `.claude/prompt-todo/config.json`:
    - [ ] #36 PROJ-321 QA: on the #32 screen, add olives: the olives row shows its price, the total is pizza + that price
    ```
 
+   While the **Line width** rule in `.claude/prompt-todo/RULES.md` is on, every written line
+   stays within its limit: a long `> ` excerpt continues on further `> ` lines, a long item
+   carries its overflow as `  - ` sub-bullets, split at a clause boundary, never mid-word.
    The ids run in that order: the app-navigation item, the dev items, the QA items. The `#32`
    item exists only with `appNavigation.mode = existing` and a context block in the ticket;
    without one the block starts at the first dev item. For a GitHub issue the key is

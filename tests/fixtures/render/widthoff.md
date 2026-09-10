@@ -99,7 +99,7 @@ Headings and `> ` lines are never items. The `QA:` rows a ticket block ends with
 `/todoFromTicket` writes after the dev items) are the ticket's manual checks — ignore rows like
 any other `QA:` row, ticked by the user, never by Claude.
 <!-- prompt-todo:tracker -->
-Tickets come from Jira (`bestpizza.atlassian.net`, project keys: BP, OPS) through the Atlassian MCP server; `/todoFromTicket <KEY>` writes a ticket block and saves the ticket's attachments under `todoAttachments/<KEY>/`.
+No ticket tracker is connected: `/todoFromTicket` only works in paste mode (the ticket text pasted after the key). `/todoSetup tracker` connects Jira or GitHub Issues.
 <!-- /prompt-todo:tracker -->
 <!-- prompt-todo:appNavigation -->
 No app-navigation skill is connected: when a ticket ends in a context block (the `Server:` / environment / screen lines a bug report carries), `/todoFromTicket` keeps those lines as plain sub-bullets of the first dev item. `/todoSetup appNavigation` connects a skill that opens the app at that screen.
@@ -139,7 +139,7 @@ key and the tag survive the rewrite.
 <!-- /prompt-todo:promptScores -->
 
 <!-- prompt-todo:lineWidth -->
-**Line width.** No line Claude writes to the todo file is longer than 120 characters — the `- [x] #N KEY TAG: ` prefix and the ` (N/5)` score included. A rewritten prompt that would overflow the item line is split at a sentence or clause boundary: the first part stays on the item line, the rest becomes indented `  - ` sub-bullets, each within the limit; never mid-word, and the score still ends the item line, never a sub-bullet. Applies to every write — a confirm word's rewrite, `/todoIdealPrompt --replace`, `/todoIdealAll`, `/todoReverse`, the items and `> ` excerpt lines `/todoFromTicket` writes (a long excerpt continues on further `> ` lines), a pasted item appended with its id. Lines the user typed are left as they are. `maxLineLength` in `.claude/prompt-todo/config.json` sets the limit (0 turns it off); re-render with `bash .claude/prompt-todo/bin/py.sh render_rules.py` after changing it.
+**Line width — off.** Lines Claude writes to the todo file have no length limit: a rewritten prompt's first line goes whole on the item line. Set `maxLineLength` in `.claude/prompt-todo/config.json` (120 is the usual choice) and re-render with `bash .claude/prompt-todo/bin/py.sh render_rules.py` to turn it on.
 <!-- /prompt-todo:lineWidth -->
 
 **/todoIdealPrompt.** After a task is confirmed fixed, the `/todoIdealPrompt` skill distills

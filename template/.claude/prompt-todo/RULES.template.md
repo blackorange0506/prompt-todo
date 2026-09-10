@@ -120,6 +120,9 @@ key and the tag survive the rewrite.
 <!-- prompt-todo:promptScores -->
 <!-- /prompt-todo:promptScores -->
 
+<!-- prompt-todo:lineWidth -->
+<!-- /prompt-todo:lineWidth -->
+
 **/todoIdealPrompt.** After a task is confirmed fixed, the `/todoIdealPrompt` skill distills
 the dialog into the prompt that would have produced the result in one try. That skill may edit
 the todo file **only** when invoked with `--replace` (replacing the item's text with the ideal

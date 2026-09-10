@@ -10,7 +10,8 @@ Usage:
 Placeholders in the template: {{projectTitle}}, {{userExample}}, {{ticketExample}},
 {{confirmWords}}, {{confirmFirst}}, {{ignoreRows}}.
 Generated blocks: <!-- prompt-todo:NAME --> … <!-- /prompt-todo:NAME --> for NAME in
-tags, tracker, appNavigation. Whatever sits between the markers is replaced.
+tags, tracker, appNavigation, codeMarkers, promptScores, lineWidth. Whatever sits between the
+markers is replaced.
 """
 import argparse
 import json
@@ -31,6 +32,7 @@ DEFAULT_CONFIG = {
     "appNavigation": {"mode": "none", "skill": "appNavigation"},
     "codeMarkers": "on",
     "promptScores": "on",
+    "maxLineLength": 120,
 }
 
 
@@ -95,6 +97,9 @@ def validate(cfg):
         fail("codeMarkers must be on or off")
     if cfg.get("promptScores") not in ("on", "off"):
         fail("promptScores must be on or off")
+    width = cfg.get("maxLineLength")
+    if isinstance(width, bool) or not isinstance(width, int) or width < 0 or 0 < width < 40:
+        fail("maxLineLength must be 0 (off) or an integer of at least 40")
     if not cfg.get("projectTitle"):
         fail("projectTitle must not be empty")
     return cfg
@@ -210,6 +215,26 @@ def prompt_scores_block(cfg):
             "stays. `/todoScore off` turns the scores off.\n".replace("{{ignoreRows}}", ignore_rows(cfg)))
 
 
+def line_width_block(cfg):
+    n = cfg["maxLineLength"]
+    if n == 0:
+        return ("**Line width — off.** Lines Claude writes to the todo file have no length limit: a "
+                "rewritten prompt's first line goes whole on the item line. Set `maxLineLength` in "
+                "`.claude/prompt-todo/config.json` (120 is the usual choice) and re-render with "
+                "`bash .claude/prompt-todo/bin/py.sh render_rules.py` to turn it on.\n")
+    return ("**Line width.** No line Claude writes to the todo file is longer than %d characters — "
+            "the `- [x] #N KEY TAG: ` prefix and the ` (N/5)` score included. A rewritten prompt that "
+            "would overflow the item line is split at a sentence or clause boundary: the first part "
+            "stays on the item line, the rest becomes indented `  - ` sub-bullets, each within the "
+            "limit; never mid-word, and the score still ends the item line, never a sub-bullet. "
+            "Applies to every write — a confirm word's rewrite, `/todoIdealPrompt --replace`, "
+            "`/todoIdealAll`, `/todoReverse`, the items and `> ` excerpt lines `/todoFromTicket` "
+            "writes (a long excerpt continues on further `> ` lines), a pasted item appended with its "
+            "id. Lines the user typed are left as they are. `maxLineLength` in "
+            "`.claude/prompt-todo/config.json` sets the limit (0 turns it off); re-render with "
+            "`bash .claude/prompt-todo/bin/py.sh render_rules.py` after changing it.\n" % n)
+
+
 def render(cfg, template):
     words = cfg["confirmWords"]
     subs = {
@@ -227,7 +252,8 @@ def render(cfg, template):
     if leftover:
         fail("unknown placeholder(s) in template: %s" % ", ".join(sorted(set(leftover))))
     blocks = {"tags": tags_block, "tracker": tracker_block, "appNavigation": app_nav_block,
-              "codeMarkers": code_markers_block, "promptScores": prompt_scores_block}
+              "codeMarkers": code_markers_block, "promptScores": prompt_scores_block,
+              "lineWidth": line_width_block}
     for name, fn in blocks.items():
         pat = re.compile(r"<!-- prompt-todo:%s -->\n.*?<!-- /prompt-todo:%s -->" % (name, name), re.S)
         if not pat.search(out):

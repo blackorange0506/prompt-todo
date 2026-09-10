@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- `maxLineLength` in `config.json` (120 by default, 0 = off): a **Line width** rule in the
+  rendered RULES.md caps every line Claude writes to the todo file, prefix and ` (N/5)` score
+  included — a confirm word's rewrite, `/todoIdealPrompt --replace`, `/todoIdealAll`,
+  `/todoReverse` and `/todoFromTicket` split a long prompt at a clause boundary into `  - `
+  sub-bullets (a long `> ` excerpt continues on further `> ` lines) instead of leaving one
+  300-character line. The user's own lines are never re-wrapped. The skills, the readme, the
+  render snapshots and a `widthoff` fixture say so.
 - `/todoIdealPrompt #N --score`: writes only the original prompt's ` (N/5)` to the item line —
   the text stays, so an item ticked with `ok` (or kept in the user's own words) still gets its
   number. The flag is an explicit ask, so it scores even while `/todoScore off` is in force;

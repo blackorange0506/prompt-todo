@@ -69,7 +69,11 @@ way next time.
    `- [x] #N ` part exactly as it is, including the item's ticket key and its tag when it has
    them (`- [x] #N PROJ-123 IOS+: `, see the todo rules), swap the text after it for the ideal
    prompt; if the prompt is multi-line, the first line goes on the item line and the rest
-   become indented `  - ` sub-bullets. A trailing `#wait` / `#more` in the old text is dropped
+   become indented `  - ` sub-bullets. While the **Line width** rule in
+   `.claude/prompt-todo/RULES.md` is on, no written line exceeds its limit, prefix and score
+   included: split a long first line at a sentence or clause boundary and carry the rest into
+   the sub-bullets, each within the limit, never mid-word — a 300-character item line is a
+   failed rewrite. A trailing `#wait` / `#more` in the old text is dropped
    with the rest of it. While the **Prompt scores** rule
    is on, the item line ends with ` (N/5)` — the score from the Feedback — replacing an
    existing ` (N/5)`, never adding a second. Show the resulting item in the reply.

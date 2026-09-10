@@ -57,6 +57,8 @@ usual way.
      - <each further line as an indented sub-bullet>
    ```
 
+   While the **Line width** rule in `.claude/prompt-todo/RULES.md` is on, every line stays
+   within its limit, prefix and score included — split at a clause boundary, never mid-word.
    `[x]` by default — the work is done and the user is recording it; `[ ]` with `--open`. If
    the dialog sat under an existing `## KEY — …` ticket block in the file, append the item
    under that block instead of at the end. While the **Prompt scores** rule in

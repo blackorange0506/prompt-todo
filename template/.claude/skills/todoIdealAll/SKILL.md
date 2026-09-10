@@ -32,7 +32,8 @@ turns the session's finished work into prompt-history the user can learn from.
    folded in, nothing the codebase or the project's rules already carry. Then replace the
    item's text in the todo file: keep the `- [x] #N KEY TAG: ` prefix exactly — ticket key and
    tag included when the item has them — first line of the prompt on the item line, overflow
-   as indented `  - ` sub-bullets. While the **Prompt scores** rule in `.claude/prompt-todo/RULES.md` is on, the
+   as indented `  - ` sub-bullets, every line within the **Line width** rule's limit while it
+   is on (prefix and score included, split at a clause boundary). While the **Prompt scores** rule in `.claude/prompt-todo/RULES.md` is on, the
    item line ends with the original prompt's ` (N/5)` score, replacing an existing one. Open
    (`[ ]`) items are never rewritten.
 

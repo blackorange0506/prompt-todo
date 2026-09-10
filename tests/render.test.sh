@@ -20,8 +20,10 @@ mk appnav    'c["appNavigation"]={"mode":"existing","skill":"navigateApp"}; c["c
 mk withdefault 'c["tags"]["default"]="Android"'
 mk markersoff 'c["codeMarkers"]="off"'
 mk scoresoff 'c["promptScores"]="off"'
+mk widthoff 'c["maxLineLength"]=0'
+mk width80 'c["maxLineLength"]=80'
 
-for n in default trimmed jira github appnav markersoff scoresoff; do
+for n in default trimmed jira github appnav markersoff scoresoff widthoff; do
   out="$(prompt_todo_py "$RENDER" --config "$D/$n.json" --template "$TPL" --stdout)" || { fail "render $n"; continue; }
   if [ "${UPDATE_SNAPSHOTS:-0}" = 1 ]; then printf '%s\n' "$out" > "$FX/$n.md"; pass "snapshot $n updated"; continue; fi
   if [ ! -f "$FX/$n.md" ]; then fail "snapshot $n missing (run with UPDATE_SNAPSHOTS=1)"; continue; fi
@@ -52,6 +54,13 @@ assert_contains "scores on by default"  "$out" '**Prompt scores.**'
 assert_contains "score token"           "$out" '(3/5)'
 out="$(prompt_todo_py "$RENDER" --config "$D/scoresoff.json" --template "$TPL" --stdout)"
 assert_contains "scores off line"       "$out" '**Prompt scores — off.**'
+out="$(prompt_todo_py "$RENDER" --config "$D/default.json" --template "$TPL" --stdout)"
+assert_contains "line width on by default" "$out" '**Line width.** No line Claude writes to the todo file is longer than 120 characters'
+out="$(prompt_todo_py "$RENDER" --config "$D/width80.json" --template "$TPL" --stdout)"
+assert_contains "line width takes the number" "$out" 'longer than 80 characters'
+out="$(prompt_todo_py "$RENDER" --config "$D/widthoff.json" --template "$TPL" --stdout)"
+assert_contains "line width off line"   "$out" '**Line width — off.**'
+assert_not_contains "no limit number when off" "$out" 'longer than'
 out="$(prompt_todo_py "$RENDER" --config "$D/appnav.json" --template "$TPL" --stdout)"
 assert_contains "appNav skill name"    "$out" '`/navigateApp` skill'
 assert_contains "custom confirm word"  "$out" '`"done"`, optionally'
@@ -65,7 +74,11 @@ mk bad2 'c["tags"]["list"].append({"tag":"QA","meaning":"x"})'
 mk bad3 'c["tracker"]["kind"]="trello"'
 mk bad4 'c["codeMarkers"]=False'
 mk bad5 'c["promptScores"]=True'
-for n in bad1 bad2 bad3 bad4 bad5; do
+mk bad6 'c["maxLineLength"]="wide"'
+mk bad7 'c["maxLineLength"]=True'
+mk bad8 'c["maxLineLength"]=10'
+mk bad9 'c["maxLineLength"]=-1'
+for n in bad1 bad2 bad3 bad4 bad5 bad6 bad7 bad8 bad9; do
   if prompt_todo_py "$RENDER" --config "$D/$n.json" --check >/dev/null 2>&1; then fail "$n accepted"; else pass "$n refused"; fi
 done
 report render

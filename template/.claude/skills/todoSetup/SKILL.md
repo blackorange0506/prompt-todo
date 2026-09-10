@@ -244,7 +244,8 @@ No question, unless the smoke test is offered. Print:
 
 1. The effective config as a short table: title, git name → todo file (exists / missing),
    tags (the rows, "no default", ignore rows), confirm words, tracker, app navigation,
-   code markers (on / off), prompt scores (on / off), attachments directory.
+   code markers (on / off), prompt scores (on / off), line width (N characters / off),
+   attachments directory.
 2. **Disabled by skipped steps**, one line each: no tracker → `/todoFromTicket` paste-only;
    no app navigation → context blocks stay as sub-bullets; no git name → no todo file yet.
 3. **Smoke test** (ask, default yes; `--yes` runs it): append `- [ ] #new Smoke test item`

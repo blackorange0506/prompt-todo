@@ -32,5 +32,6 @@
     "skill": "appNavigation"
   },
   "codeMarkers": "on",
-  "promptScores": "on"
+  "promptScores": "on",
+  "maxLineLength": 120
 }

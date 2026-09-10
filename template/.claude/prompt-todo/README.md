@@ -226,6 +226,12 @@ first prompt already was the ideal one, 1 when the result came from the correcti
 numbers climb; `/todoScore off` drops them. To keep your own wording and still see the number,
 `/todoIdealPrompt #12 --score` writes just the score — with the scores on or off.
 
+The rewrite never leaves you a 300-character line: every line Claude writes to the file stays
+within `maxLineLength` characters (`config.json`, 120 by default, 0 for no limit), prefix and
+score included — a longer prompt continues as `  - ` sub-bullets, split at a clause boundary.
+Your own lines are never re-wrapped. After changing the value, re-render the rules with
+`bash .claude/prompt-todo/bin/py.sh render_rules.py`.
+
 ## 7. Where things live
 
 | What                       | Where                                                    |
@@ -233,7 +239,7 @@ numbers climb; `/todoScore off` drops them. To keep your own wording and still s
 | Your items                 | `TODO.<name>.md`                                         |
 | Archived done items        | `TODO.<name>.archive.md`                                 |
 | The rules Claude executes  | `.claude/prompt-todo/RULES.md` (generated; imported by `CLAUDE.md`) |
-| The configuration          | `.claude/prompt-todo/config.json` (edit with `/todoSetup`) |
+| The configuration          | `.claude/prompt-todo/config.json` (edit with `/todoSetup`; `maxLineLength` by hand, then re-render) |
 | The skills                 | `.claude/skills/todo*`, `.claude/skills/appNavigation`   |
 | The `works` / `fixed` hook | `.claude/hooks/todo-confirm.sh`, `.claude/settings.json` |
 | Ticket attachments         | `todoAttachments/<KEY>/` (gitignored)                    |

@@ -15,8 +15,8 @@ skills after. Print it and stop — no questions, no edits. The full explanation
 
 1. **Read `.claude/prompt-todo/config.json`** (`Read` tool) for the confirm words
    (`confirmWords`; the sheet shows the first two), the tracker (`tracker.kind`), the
-   app-navigation state (`appNavigation.mode`), the code markers (`codeMarkers`) and the
-   prompt scores (`promptScores`). Read `.claude/prompt-todo/README.md` and take the
+   app-navigation state (`appNavigation.mode`), the code markers (`codeMarkers`), the
+   prompt scores (`promptScores`) and the line width (`maxLineLength`). Read `.claude/prompt-todo/README.md` and take the
    `### Skills` table — the markdown table right under that heading, header row to the last
    `|` line. If the config is missing, say `install.sh` has not been run here and print the
    sheet with the defaults.
@@ -27,7 +27,8 @@ skills after. Print it and stop — no questions, no edits. The full explanation
    `tracker.kind = none` → `/todoFromTicket takes pasted ticket text only — /todoSetup tracker connects Jira or GitHub`;
    `appNavigation.mode = none` → `/appNavigation is not connected — /todoSetup appNavigation`;
    `codeMarkers = off` → `Code markers are off — /todoMarkCode on`;
-   `promptScores = off` → `Prompt scores are off — /todoScore on`.
+   `promptScores = off` → `Prompt scores are off — /todoScore on`;
+   `maxLineLength = 0` → `Line width is off — set maxLineLength in .claude/prompt-todo/config.json and re-render`.
 
 ## The sheet
 

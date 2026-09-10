@@ -138,6 +138,10 @@ key and the tag survive the rewrite.
 **Prompt scores — off.** No ` (N/5)` score is written when an item is rewritten; scores already on item lines stay. `/todoIdealPrompt #N --score` still scores that one item on request. `/todoScore on` turns them on.
 <!-- /prompt-todo:promptScores -->
 
+<!-- prompt-todo:lineWidth -->
+**Line width.** No line Claude writes to the todo file is longer than 120 characters — the `- [x] #N KEY TAG: ` prefix and the ` (N/5)` score included. A rewritten prompt that would overflow the item line is split at a sentence or clause boundary: the first part stays on the item line, the rest becomes indented `  - ` sub-bullets, each within the limit; never mid-word, and the score still ends the item line, never a sub-bullet. Applies to every write — a confirm word's rewrite, `/todoIdealPrompt --replace`, `/todoIdealAll`, `/todoReverse`, the items and `> ` excerpt lines `/todoFromTicket` writes (a long excerpt continues on further `> ` lines), a pasted item appended with its id. Lines the user typed are left as they are. `maxLineLength` in `.claude/prompt-todo/config.json` sets the limit (0 turns it off); re-render with `bash .claude/prompt-todo/bin/py.sh render_rules.py` after changing it.
+<!-- /prompt-todo:lineWidth -->
+
 **/todoIdealPrompt.** After a task is confirmed fixed, the `/todoIdealPrompt` skill distills
 the dialog into the prompt that would have produced the result in one try. That skill may edit
 the todo file **only** when invoked with `--replace` (replacing the item's text with the ideal
