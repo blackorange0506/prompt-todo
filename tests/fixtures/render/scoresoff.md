@@ -126,7 +126,9 @@ There is no default tag: an item without a tag simply has no tag.
 <!-- /prompt-todo:tags -->
 
 Ignoring a `QA:`/`Admin:` row means: never work it, rewrite it, tag it, or check it off — if
-one is pasted as a prompt, say it's the user's own task and stop. When `/todoIdealPrompt --replace` or
+one is pasted as a prompt, say it's the user's own task and stop. Moving one the user has
+ticked to the archive, verbatim, is none of these: `/todoArchive` archives it like any other
+`[x]` item. When `/todoIdealPrompt --replace` or
 `/todoIdealAll` rewrites an item, the preserved prefix is `- [state] #N KEY TAG: ` — the ticket
 key and the tag survive the rewrite.
 

@@ -115,7 +115,7 @@ You only touch your own file. Claude never reads anyone else's. Ids are per file
   time it opens the file: highest id in the file and its archive, plus one. Ids are never
   renumbered or reused.
 - Done items are never deleted. When the file gets long, `/todoArchive` moves them to
-  `TODO.jd.archive.md`.
+  `TODO.jd.archive.md` — your own ticked `QA:` / `Admin:` rows included, verbatim.
 
 ## 4. Tags and tickets
 

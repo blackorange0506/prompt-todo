@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- `/todoArchive` also moves the user's own ticked ignore rows (`QA:` / `Admin:` by default) to
+  the archive, verbatim: relocating a done row is neither working, rewriting nor ticking it,
+  so the ignore rule is untouched. Open ignore rows stay. The skill, the Ignoring rule, the
+  workflow doc and the render snapshots say so.
 - `maxLineLength` in `config.json` (120 by default, 0 = off): a **Line width** rule in the
   rendered RULES.md caps every line Claude writes to the todo file, prefix and ` (N/5)` score
   included — a confirm word's rewrite, `/todoIdealPrompt --replace`, `/todoIdealAll`,

@@ -21,8 +21,11 @@ commits anything.
    the Autoincrement rule first, as on any touch. Edit tool only.
 
 2. **Collect the candidates**: every top-level `- [x]` / `- [X]` item together with the
-   indented sub-bullets that belong to it. Rows carrying one of the ignore tags of the rules (`QA:` / `Admin:` by default) are never
-   candidates, whatever their state. If there are none, say so and stop.
+   indented sub-bullets that belong to it. Rows carrying one of the ignore tags of the rules
+   (`QA:` / `Admin:` by default) are candidates too once the user has ticked them: moving a
+   row verbatim is not working, rewriting or ticking it, so the ignore rule is not broken.
+   An open ignore row stays where it is like any other open item. If there are none, say so
+   and stop.
 
 3. **Move**: append the collected items, in file order and verbatim, to
    `TODO.<name>.archive.md` — create it with the header `# <projectTitle> — TODO archive` if it
