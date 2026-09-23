@@ -2,7 +2,7 @@
 name: todoFromTicket
 description: "Turn one ticket into draft prompt items in the user's todo file (TODO.<git user.name>.md, resolved as in the todo rules): fetch the ticket from the configured tracker (Jira via the Atlassian MCP server, GitHub Issues via gh, or the ticket text pasted after the key), download its attachments to <attachmentsDir>/<KEY>/, then append a `## KEY — summary` ticket block with 1–5 numbered dev items, each carrying the ticket key right after its id (`- [ ] #32 PROJ-123 prompt`), then 1–5 `QA:` items (`- [ ] #36 PROJ-123 QA: check …`) — the manual checks for the ticket, the user's own rows that Claude never works or ticks; their number does not follow the dev count. When the ticket ends in a context block (Server / App version / where-in-the-app lines) and an app-navigation skill is connected, that block becomes the ticket block's own first item. Starts no work. With --deep, the ticket is first handed to a read-only subagent that studies the codebase — where the ticket's surface lives, the likely cause or touch points, constraints the code imposes, the natural split of the work — and the prompts are drafted from that analysis; the file gets the same block, only sharper prompts, never the analysis itself. Also answers to the old name /todoFromJira. Use whenever the user wants a ticket turned into todo prompts — phrases like '/todoFromTicket PROJ-123', '/todoFromTicket <ticket-url>', '/todoFromTicket 42' (a GitHub issue), '/todoFromJira PROJ-123', 'make prompts from PROJ-123', 'add PROJ-123 to my todo', 'todo from ticket', 'draft prompts for this ticket'. This skill IS allowed to edit the user's todo file; that is its purpose."
 argument-hint: "<KEY | issue-number | url> [--no-attachments] [--deep] [pasted ticket text]"
-allowed-tools: Read, Edit, Write, Glob, Grep, Agent, Bash(git config:*), Bash(gh:*), Bash(curl:*), Bash(mkdir:*), Bash(bash .claude/prompt-todo/bin/py.sh:*), Bash(jq:*), mcp__atlassian__getJiraIssue, mcp__atlassian__fetch, mcp__atlassian__search
+allowed-tools: Read, Edit, Write, Glob, Grep, Agent, Bash(git config:*), Bash(gh:*), Bash(curl:*), Bash(mkdir:*), Bash(bash .claude/prompt-todo/bin/py.sh:*), Bash(jq:*), mcp__atlassian__getJiraIssue, mcp__atlassian__search
 ---
 
 # /todoFromTicket
@@ -25,6 +25,19 @@ Read once per run from `.claude/prompt-todo/config.json`:
 | `appNavigation.mode`   | `existing` → the context block becomes a `/<skill>` item (step 6)   |
 | `appNavigation.skill`  | the skill's name                                                     |
 
+## Credentials
+
+`.claude/prompt-todo/credentials.json` — gitignored by `install.sh` — the Atlassian account
+and a personal API token (id.atlassian.com → Security → API tokens), used only for the
+attachment download; the ticket text comes through the MCP server's OAuth login.
+`/todoSetup tracker` writes it; by hand, copy `credentials.example.json` next to it:
+
+```json
+{ "email": "you@yourcompany.com", "token": "…" }
+```
+
+`JIRA_CREDENTIALS_FILE` names a file elsewhere. GitHub needs none (`gh` is logged in).
+
 ## Argument forms
 
 ```
@@ -45,9 +58,11 @@ Read once per run from `.claude/prompt-todo/config.json`:
    this skill has no free-form mode without a key.
 
 2. **Fetch the ticket** with the backend `tracker.kind` selects:
-   - **`jira`** — `mcp__atlassian__getJiraIssue` (`contentFormat: "markdown"`): summary,
-     description, issue type, labels/components, status, and the attachment list. If the MCP
-     server is not connected, say so and point to `/mcp` (login) or `/todoSetup tracker`.
+   - **`jira`** — `mcp__atlassian__getJiraIssue` with `responseContentFormat: "markdown"` and
+     `fields: ["summary", "description", "status", "issuetype", "priority", "labels",
+     "components", "attachment", "comment"]` — the attachment list only comes when
+     `attachment` is asked for; the default field set leaves it out. If the MCP server is
+     not connected, say so and point to `/mcp` (login) or `/todoSetup tracker`.
    - **`github`** — `gh issue view <N> --repo <tracker.github.repo> --json number,title,body,labels,state,comments`.
      If `gh` is missing or not logged in (`gh auth status`), say so and point to
      `/todoSetup tracker`.
@@ -57,10 +72,24 @@ Read once per run from `.claude/prompt-todo/config.json`:
      ticket text after the key."
 
 3. **Download attachments** (unless `--no-attachments` or paste mode) to
-   `<attachmentsDir>/<KEY>/<original-filename>` (suffix `(2)`, `(3)`, … on collision): Jira
-   attachments via `mcp__atlassian__fetch` on each `content` URL; for GitHub, the image and
-   file links in the issue body and comments via `curl -L`. Create the directory. Read image
-   and log attachments if they change what the prompts should say.
+   `<attachmentsDir>/<KEY>/<original-filename>` (suffix `(2)`, `(3)`, … on collision):
+   - **Jira** — the MCP server carries no file bytes, so the files come over plain HTTPS with
+     the user's own API token: write the `fields.attachment` array from step 2 to a file in
+     the scratchpad directory and run
+
+     ```bash
+     bash .claude/prompt-todo/bin/py.sh download_attachments.py \
+       --dir <attachmentsDir>/<KEY> < <scratchpad>/attachments.json
+     ```
+
+     It prints one path per saved file and `FAILED <name>: <reason>` on stderr for the rest.
+     Exit 2 means there is no usable `credentials.json` (see **Credentials**): say so in one
+     line, name `credentials.example.json` and `/todoSetup tracker`, and carry on without
+     files — the `Attachments:` line then lists the names only.
+   - **GitHub** — the image and file links in the issue body and comments via `curl -L`.
+
+   Create the directory. Read image and log attachments if they change what the prompts
+   should say.
 
 4. **`--deep` only: study the codebase first.** Dispatch one read-only subagent with the
    Agent tool (the Explore type). Its brief carries the ticket key, summary, description,
@@ -178,6 +207,7 @@ Read once per run from `.claude/prompt-todo/config.json`:
   the todo file *and* the archive); the heading is only for reading. Both formats are defined
   in the todo rules, **Ticket blocks**.
 - Never ticks, rewrites or archives anything; never touches other users' files.
-- If the fetch fails, report the error and write nothing (or offer paste mode).
+- If the fetch fails, report the error and write nothing (or offer paste mode). A failed or
+  skipped attachment download never blocks the block.
 - `--deep` reads the codebase and never writes to it; the only file this skill touches is
   still the user's todo file.

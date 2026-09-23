@@ -40,7 +40,10 @@ assert_eq "hook merged once"   "1" "$(count_in_file 'todo-confirm.sh' "$D/.claud
 assert_eq "other hook kept"    "1" "$(count_in_file 'echo other-hook' "$D/.claude/settings.json")"
 assert_eq "permissions kept"   "1" "$(count_in_file 'Bash(ls:*)' "$D/.claude/settings.json")"
 assert_eq "gitignore attachments" "1" "$(count_in_file 'todoAttachments/' "$D/.gitignore")"
+assert_eq "gitignore credentials" "1" "$(count_in_file '.claude/prompt-todo/credentials.json' "$D/.gitignore")"
 assert_eq "gitignore build kept"  "1" "$(count_in_file 'build/' "$D/.gitignore")"
+assert_file "download script copied"     "$D/.claude/prompt-todo/bin/download_attachments.py"
+assert_file "credentials example copied" "$D/.claude/prompt-todo/credentials.example.json"
 is_windows || { [ -x "$D/.claude/hooks/todo-confirm.sh" ] && pass "hook executable" || fail "hook executable"; }
 assert_eq "hook command runs through bash" "1" "$(count_in_file 'bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/todo-confirm.sh' "$D/.claude/settings.json")"
 assert_eq "gitattributes: hook LF"    "1" "$(count_in_file '.claude/hooks/*.sh text eol=lf' "$D/.gitattributes")"
@@ -71,6 +74,7 @@ assert_contains "upgrade names the removed skill" "$out" 'renamed to todoIdealAl
 assert_eq "import line still once"     "1" "$(count_in_file '@.claude/prompt-todo/RULES.md' "$D/CLAUDE.md")"
 assert_eq "hook still once"            "1" "$(count_in_file 'todo-confirm.sh' "$D/.claude/settings.json")"
 assert_eq "gitignore line still once"  "1" "$(count_in_file 'todoAttachments/' "$D/.gitignore")"
+assert_eq "gitignore credentials still once" "1" "$(count_in_file '.claude/prompt-todo/credentials.json' "$D/.gitignore")"
 assert_eq "gitattributes line still once" "1" "$(count_in_file '.claude/hooks/*.sh text eol=lf' "$D/.gitattributes")"
 assert_contains "re-rendered with the edited title" "$(cat "$D/.claude/prompt-todo/RULES.md")" '# Edited — TODO'
 
@@ -88,9 +92,14 @@ assert_no_file "no appNavigation skill" "$E/.claude/skills/appNavigation"
 assert_file "placeholder skill installed by default" "$D/.claude/skills/appNavigation/SKILL.md"
 assert_file "CLAUDE.md created" "$E/CLAUDE.md"
 
-# uninstall restores
+# uninstall restores; the user's token file is kept and named
 printf '# My App — TODO\n- [ ] #1 keep me\n' > "$D/TODO.jd.md"
+printf '{"email":"jd@example.test","token":"t"}\n' > "$D/.claude/prompt-todo/credentials.json"
 out="$(bash "$ROOT/uninstall.sh" --target "$D" 2>&1)" || fail "uninstall rc" "$out"
+assert_file     "credentials kept on uninstall" "$D/.claude/prompt-todo/credentials.json"
+assert_contains "uninstall names the kept token file" "$out" 'kept .claude/prompt-todo/credentials.json'
+assert_eq "gitignore credentials line kept" "1" "$(count_in_file '.claude/prompt-todo/credentials.json' "$D/.gitignore")"
+rm -f "$D/.claude/prompt-todo/credentials.json"; rmdir "$D/.claude/prompt-todo" 2>/dev/null || true
 assert_no_file "prompt-todo dir gone"   "$D/.claude/prompt-todo"
 assert_no_file "hook gone"            "$D/.claude/hooks/todo-confirm.sh"
 assert_no_file "skills gone"          "$D/.claude/skills/todoIdealPrompt"

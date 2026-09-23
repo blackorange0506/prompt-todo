@@ -102,7 +102,7 @@ under `.claude/skills/appNavigation/`.
 | `.claude/skills/appNavigation/`             | the navigation placeholder, a description to implement (optional) |
 | one line in `CLAUDE.md`                     | `@.claude/prompt-todo/RULES.md` — the rules are always in context |
 | one entry in `.claude/settings.json`        | the hook (`bash "$CLAUDE_PROJECT_DIR"/.claude/hooks/todo-confirm.sh …`), merged next to whatever is already there |
-| one line in `.gitignore`                    | the attachments directory                                     |
+| two lines in `.gitignore`                   | the attachments directory and `.claude/prompt-todo/credentials.json` (the Jira API token for attachment downloads) |
 | two lines in `.gitattributes`               | keep the hook and the scripts LF, so a Windows checkout with `core.autocrlf=true` can still run them |
 
 Commit `.claude/` (and the `.gitattributes` lines) with the project: the whole team then shares

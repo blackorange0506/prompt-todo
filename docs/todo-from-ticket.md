@@ -36,9 +36,11 @@ A key is required; there is no free-form mode. Which backend reads the ticket is
 2. **Fetches the ticket**: summary, description, type, labels, status, attachment list. If the
    fetch fails it reports the error and writes nothing (or offers paste mode).
 3. **Downloads the attachments** to `<attachmentsDir>/<KEY>/<original-filename>` (default
-   `todoAttachments/PROJ-321/`, gitignored; a name collision gets a `(2)`, `(3)` suffix). Images
-   and logs are read when they change what the prompts should say. `--no-attachments` and
-   paste mode skip this step.
+   `todoAttachments/PROJ-321/`, gitignored; a name collision gets a `(2)`, `(3)` suffix). Jira
+   files need your API token in `.claude/prompt-todo/credentials.json` (`/todoSetup tracker`
+   writes it); without it the step says so and the block still comes. Images and logs are read
+   when they change what the prompts should say. `--no-attachments` and paste mode skip this
+   step.
 4. **With `--deep`, studies the codebase first**: a read-only subagent gets the ticket and
    reports where the surface lives, the likely cause or touch points, the constraints the
    code imposes and the natural split of the work; the prompts are then drafted from that

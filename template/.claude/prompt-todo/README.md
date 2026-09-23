@@ -157,7 +157,9 @@ archive, and `grep PROJ-321` finds the ticket's items in both files.
 
 Claude fetches the ticket (Jira through the Atlassian MCP server, GitHub Issues through `gh`;
 `/todoSetup tracker` connects one — or paste the ticket text after the key), saves its
-attachments under `todoAttachments/PROJ-321/`,
+attachments under `todoAttachments/PROJ-321/` (Jira: with your API token from
+`.claude/prompt-todo/credentials.json`, which `/todoSetup tracker` writes; without it the
+prompts still come, the files don't),
 and appends a ticket block to your file — draft first prompts, nothing started (the block in
 section 1 is what it looks like):
 
@@ -243,6 +245,7 @@ Your own lines are never re-wrapped. After changing the value, re-render the rul
 | The skills                 | `.claude/skills/todo*`, `.claude/skills/appNavigation`   |
 | The `works` / `fixed` hook | `.claude/hooks/todo-confirm.sh`, `.claude/settings.json` |
 | Ticket attachments         | `todoAttachments/<KEY>/` (gitignored)                    |
+| Jira token for attachments | `.claude/prompt-todo/credentials.json` (gitignored)      |
 
 `.claude/prompt-todo/RULES.md` holds the exact rules Claude follows, generated from
 `config.json`; this file explains them for people. When the two disagree, the rules file wins.

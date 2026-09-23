@@ -88,8 +88,9 @@ PY
   fi
 fi
 
-# The .gitignore entry for the attachments directory stays: it may hold downloaded files the
-# user wants kept out of git. The .gitattributes lines install.sh added go.
+# The .gitignore entries for the attachments directory and credentials.json stay: the directory
+# may hold downloaded files and the file the user's API token, both to be kept out of git.
+# The .gitattributes lines install.sh added go.
 GITATTRIBUTES="$TARGET/.gitattributes"
 if [ -f "$GITATTRIBUTES" ] && grep -qF '.claude/prompt-todo/bin/* text eol=lf' "$GITATTRIBUTES"; then
   if [ "$DRY" = 1 ]; then dry "remove the prompt-todo lines from .gitattributes"; else
@@ -107,6 +108,7 @@ if [ "$DRY" = 0 ]; then
            .claude/skills/todoIdealAll .claude/skills/todoIdealize .claude/skills/todoNumber .claude/skills/todoReverse .claude/skills/todoMarkCode .claude/skills/todoScore .claude/skills/todoHelp .claude/prompt-todo/bin .claude/prompt-todo .claude/hooks .claude/skills/appNavigation .claude/skills; do
     [ -d "$TARGET/$d" ] && rmdir "$TARGET/$d" 2>/dev/null || true
   done
+  [ -f "$FLOW/credentials.json" ] && warn "kept .claude/prompt-todo/credentials.json — your Atlassian API token; delete it by hand if it is no longer needed"
   APP="$TARGET/.claude/skills/appNavigation"
   if [ -d "$APP" ]; then
     find "$APP" -type d -empty -delete 2>/dev/null || true

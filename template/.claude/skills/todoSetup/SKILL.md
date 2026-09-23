@@ -141,9 +141,10 @@ Any ✗ that could not be fixed: say what to do by hand.
 > `/todoFromTicket` turns a ticket into numbered first prompts in your todo file, and — when
 > an app-navigation skill is connected — the item that opens the app where the bug lives. To
 > read tickets Claude needs a connection to your tracker: for Jira that is the Atlassian MCP
-> server (OAuth, logged in once with `/mcp`; no token stored in the project), for GitHub
-> Issues the `gh` CLI. Nothing else in the flow needs it. Without it, `/todoFromTicket` only
-> works with the ticket text pasted in, and the ticket-key input of app navigation is
+> server (OAuth, logged in once with `/mcp`) plus, for the attachments — screenshots, logs —
+> a personal API token in a gitignored file (the MCP server carries no file bytes); for
+> GitHub Issues the `gh` CLI. Nothing else in the flow needs it. Without it, `/todoFromTicket`
+> only works with the ticket text pasted in, and the ticket-key input of app navigation is
 > unavailable; everything else works.
 >
 > Example — the sample app BestPizza, ticket PROJ-321 "Order total wrong after removing a
@@ -187,7 +188,15 @@ Any ✗ that could not be fixed: say what to do by hand.
 3. Test: ask for one ticket key the user knows; call `mcp__atlassian__getJiraIssue` on it and
    show its summary line, or the error. A failed test still saves the config (the login may
    happen later).
-4. Write `tracker.kind = "jira"`, `tracker.jira.host`, `tracker.jira.projectKeys`.
+4. Attachments: if `.claude/prompt-todo/credentials.json` already holds an email and a
+   token, say so and keep it. Otherwise ask with `AskUserQuestion` — *Enter email + API token
+   now* (a personal token from id.atlassian.com → Security → API tokens) or *Skip —
+   attachments will not download*. On enter: ask for the two values (the token as free text
+   via *Other*; never print it back), write the file with `Write` as
+   `{"email": "…", "token": "…"}`, and check `.gitignore` lists
+   `.claude/prompt-todo/credentials.json` (add the line with `Edit` if `install.sh` did not).
+   On skip: say the prompts still come, the files don't, and that this step can be re-run.
+5. Write `tracker.kind = "jira"`, `tracker.jira.host`, `tracker.jira.projectKeys`.
 
 **GitHub:**
 1. Repository `owner/repo` — default: parsed from `git config remote.origin.url` when it is a
@@ -243,11 +252,12 @@ an existing `permissions.allow`, no duplicates). `--yes`: add the always-on rule
 No question, unless the smoke test is offered. Print:
 
 1. The effective config as a short table: title, git name → todo file (exists / missing),
-   tags (the rows, "no default", ignore rows), confirm words, tracker, app navigation,
-   code markers (on / off), prompt scores (on / off), line width (N characters / off),
-   attachments directory.
+   tags (the rows, "no default", ignore rows), confirm words, tracker (Jira: attachments
+   token present / missing), app navigation, code markers (on / off), prompt scores
+   (on / off), line width (N characters / off), attachments directory.
 2. **Disabled by skipped steps**, one line each: no tracker → `/todoFromTicket` paste-only;
-   no app navigation → context blocks stay as sub-bullets; no git name → no todo file yet.
+   Jira without a token → attachments are not downloaded; no app navigation → context blocks
+   stay as sub-bullets; no git name → no todo file yet.
 3. **Smoke test** (ask, default yes; `--yes` runs it): append `- [ ] #new Smoke test item`
    to the todo file with `Edit`, run the Autoincrement rule, show the line with its id, then
    remove that line again (Edit) and say the id is now taken — the next item gets the one

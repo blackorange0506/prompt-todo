@@ -13,7 +13,7 @@
 #   2. copies template/.claude/** into <target>/.claude/ (package files, always overwritten)
 #   3. adds the works/fixed hook to <target>/.claude/settings.json (merge, never overwrite)
 #   4. appends `@.claude/prompt-todo/RULES.md` to <target>/CLAUDE.md (created if missing)
-#   5. adds the attachments directory to <target>/.gitignore
+#   5. adds the attachments directory and .claude/prompt-todo/credentials.json to <target>/.gitignore
 #   6. writes .claude/prompt-todo/config.json from the example if absent, renders RULES.md,
 #      stamps VERSION and writes MANIFEST (the list uninstall.sh removes)
 #
@@ -172,6 +172,7 @@ ensure_ignored() {
   log ".gitignore: $line"
 }
 ensure_ignored "${ATTACH_DIR%/}/"
+ensure_ignored ".claude/prompt-todo/credentials.json"   # the Atlassian API token for attachment downloads
 
 # ---- 5b. .gitattributes: the scripts must stay LF ----------------------------------
 # A Windows checkout with core.autocrlf=true would turn them into CRLF, which bash cannot run.

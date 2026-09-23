@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+- Jira attachments are really downloaded now. The Atlassian MCP `fetch` tool the skill named
+  takes an issue or page id and returns its text — it cannot fetch an attachment URL and
+  returns no file bytes — and `getJiraIssue` leaves the attachment list out unless
+  `attachment` is in `fields` (the format parameter is `responseContentFormat`, not
+  `contentFormat`). New `bin/download_attachments.py` (Python 3 standard library) reads the
+  attachment array on stdin and fetches each `content` URL with HTTP basic auth — the user's
+  email and a personal Atlassian API token from the gitignored
+  `.claude/prompt-todo/credentials.json` (`credentials.example.json` shows the shape;
+  `$JIRA_CREDENTIALS_FILE` names another file) — following Jira's redirect to the signed
+  download link without sending the token to that host. Exit 2 with a hint when there are no
+  credentials, 1 when a file failed, 0 otherwise; the block is written either way. `/todoSetup
+  tracker` offers to write the token file; `install.sh` adds it to `.gitignore` and
+  `uninstall.sh` keeps it and says so. A stub-server test (`tests/download.test.sh`) covers
+  the redirect, the auth header, the collision suffix and the exit codes. The skill, the
+  wizard, the readme, the Jira doc and the ticket doc say so.
 - `/todoArchive` also moves the user's own ticked ignore rows (`QA:` / `Admin:` by default) to
   the archive, verbatim: relocating a done row is neither working, rewriting nor ticking it,
   so the ignore rule is untouched. Open ignore rows stay. The skill, the Ignoring rule, the

@@ -65,14 +65,26 @@ Then, inside Claude Code, run `/mcp`, pick `atlassian`, and log in in the browse
 `--scope user` stores the server in your user config, not in the project, so every project on
 the machine can use it and nothing about it is committed.
 
-The skill uses two tools: `getJiraIssue` (the ticket as markdown) and `fetch` (the
-attachments). In `config.json`:
+The skill reads the ticket with one MCP tool, `getJiraIssue` (the ticket as markdown, with
+its attachment list). In `config.json`:
 
 ```json
 "tracker": {"kind": "jira", "jira": {"host": "yourcompany.atlassian.net", "projectKeys": ["PROJ"]}}
 ```
 
 `host` is accepted in ticket URLs; `projectKeys` are the keys recognised bare (`PROJ-321`).
+
+**The attachments need one more thing.** The MCP server carries no file bytes, so the
+screenshots and logs are downloaded over plain HTTPS with a personal API token
+(id.atlassian.com → Security → API tokens) in `.claude/prompt-todo/credentials.json` —
+gitignored by `install.sh`, written by `/todoSetup tracker`, or copied by hand from
+`credentials.example.json` next to it:
+
+```json
+{ "email": "you@yourcompany.com", "token": "…" }
+```
+
+Without it the prompts still come and the `Attachments:` line lists the names only.
 
 ## GitHub Issues: the `gh` CLI
 
@@ -108,4 +120,7 @@ Everything else is the same; only the attachment download is skipped.
 
 `attachmentsDir` (default `todoAttachments`) is added to `.gitignore` by `install.sh`. Files
 land in `<attachmentsDir>/<KEY>/<original name>`; a second file with the same name gets a
-`(2)` suffix.
+`(2)` suffix. Jira files come through `.claude/prompt-todo/bin/download_attachments.py`
+(Python 3 standard library only; it follows Jira's redirect to the signed download link
+without sending the token on to that host), GitHub files through `curl -L`. A file that fails
+is named in the reply and never blocks the block.
