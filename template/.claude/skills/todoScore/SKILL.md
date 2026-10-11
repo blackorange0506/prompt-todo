@@ -39,9 +39,10 @@ does not want numbers in its todo files flips the rule here: `off` and no score 
    show the error and revert the edit.
 
 5. **Reply** in two lines: the new state, and what changes from now on —
-   `off`: rewrites append no ` (N/5)`, `/todoIdealPrompt` prints no score, existing scores
-   stay, `/todoIdealPrompt #N --score` still scores one item on request; `on`: every rewrite scores the original prompt again, nothing is scored
-   retroactively.
+   `off`: rewrites append no ` (N/5)`, `/todoIdealPrompt` prints no score and writes none,
+   existing scores stay, `/todoIdealPrompt #N --score` still scores one item on request; `on`:
+   every rewrite scores the original prompt again and a bare `/todoIdealPrompt #N` writes the
+   score to the item line, nothing is scored retroactively.
 
 ## Notes
 

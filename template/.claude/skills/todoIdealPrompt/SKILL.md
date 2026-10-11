@@ -1,7 +1,7 @@
 ---
 name: todoIdealPrompt
-description: "Distill a finished TODO-item dialog into the IDEAL PROMPT — the single SHORT message (a few typeable lines, never a spec) that would have produced the confirmed result on the first try — plus feedback on what the original prompt lacked. Prompt-writing training for the user: Claude reconstructs the whole back-and-forth (original prompt, every correction, the final accepted fix) and writes the prompt it wishes it had received. With --replace, the item's text in the user's todo file (TODO.<git user.name>.md, resolved as in the todo rules) is replaced by the ideal prompt; with --score, only the ` (N/5)` score of the original prompt is written to the item line, the text stays, and it is written even when the project's prompt scores are off; WITHOUT --replace or --score this skill must not touch that file. Use when the user wants the ideal prompt for a task just finished — phrases like '/todoIdealPrompt', '/todoIdealPrompt #16', 'what should I have prompted', 'print the correct prompt for this task', 'how should I have asked for this', 'make the ideal prompt'. Trigger eagerly once a task is confirmed fixed."
-argument-hint: "[#N] [--replace|--score]"
+description: "Distill a finished TODO-item dialog into the IDEAL PROMPT — the single SHORT message (a few typeable lines, never a spec) that would have produced the confirmed result on the first try — plus feedback on what the original prompt lacked. Prompt-writing training for the user: Claude reconstructs the whole back-and-forth (original prompt, every correction, the final accepted fix) and writes the prompt it wishes it had received. With --replace, the item's text in the user's todo file (TODO.<git user.name>.md, resolved as in the todo rules) is replaced by the ideal prompt; without a flag, only the ` (N/5)` score of the original prompt is written to the item line and the text stays — the default while the project's prompt scores are on; --score asks for it explicitly and writes it even when they are off; with --no-score this skill must not touch that file. Use when the user wants the ideal prompt for a task just finished — phrases like '/todoIdealPrompt', '/todoIdealPrompt #16', 'what should I have prompted', 'print the correct prompt for this task', 'how should I have asked for this', 'make the ideal prompt'. Trigger eagerly once a task is confirmed fixed."
+argument-hint: "[#N] [--replace|--score|--no-score]"
 allowed-tools: Read, Edit, Glob, Grep, Bash(git config:*)
 ---
 
@@ -16,10 +16,11 @@ way next time.
 ## Argument forms
 
 ```
-/todoIdealPrompt                # the task most recently confirmed fixed in this session
-/todoIdealPrompt #16            # a specific item in the user's todo file
-/todoIdealPrompt #16 --replace  # same, and replace the item's text in that file with the ideal prompt
-/todoIdealPrompt #16 --score    # same, and write only the score to that item's line — its text stays
+/todoIdealPrompt                 # the task most recently confirmed fixed in this session
+/todoIdealPrompt #16             # a specific item in the user's todo file; its score goes on the item line, its text stays
+/todoIdealPrompt #16 --replace   # same, and replace the item's text in that file with the ideal prompt
+/todoIdealPrompt #16 --score     # the default, asked for explicitly — the score is written even while scores are off
+/todoIdealPrompt #16 --no-score  # print only — the todo file is not touched
 ```
 
 ## What Claude does
@@ -78,17 +79,21 @@ way next time.
    is on, the item line ends with ` (N/5)` — the score from the Feedback — replacing an
    existing ` (N/5)`, never adding a second. Show the resulting item in the reply.
 
-5. **`--score` only:** score the item's original prompt and write that alone: append ` (N/5)`
-   — the score from the Feedback — to the end of the item line with the Edit tool, replacing an
-   existing ` (N/5)`, never adding a second. The item's text, its `[ ]` / `[x]` state, prefix
-   and sub-bullets stay exactly as they are — the user keeps their own prompt and records how
-   close it was. The flag is an explicit ask, so it writes the score even while the **Prompt
-   scores** rule is off; a `QA:` / `Admin:` row (the rule's ignored rows) is never scored — say
-   so and stop. `--replace` already writes the score, so `--replace --score` is just `--replace`.
-   Show the resulting item in the reply.
+5. **The score, by default (no flag, or `--score`):** score the item's original prompt and
+   write that alone: append ` (N/5)` — the score from the Feedback — to the end of the item
+   line with the Edit tool, replacing an existing ` (N/5)`, never adding a second. The item's
+   text, its `[ ]` / `[x]` state, prefix and sub-bullets stay exactly as they are — the user
+   keeps their own prompt and records how close it was. Without a flag this happens while the
+   **Prompt scores** rule is on; while it is off the bare form prints only. `--score` is the
+   explicit ask, so it writes the score even while that rule is off. A `QA:` / `Admin:` row
+   (the rule's ignored rows) is never scored — say so and stop; a task that has no item in the
+   todo file has no line to score — print only. `--replace` already writes the score, so
+   `--replace --score` is just `--replace`. Show the resulting item in the reply.
 
-   **Without `--replace` or `--score`, this skill MUST NOT edit the todo file** — printing is
-   the whole job.
+   **With `--no-score`, this skill MUST NOT edit the todo file** — printing is the whole job;
+   the Feedback still opens with the score. `--replace --no-score` rewrites the item without
+   appending a score. The score line is the only edit the bare form makes: the item's text
+   changes with `--replace` alone.
    (The general workflow rule about checking items off after confirmation lives in the todo
    rules and is separate from this skill; do not combine the two in one edit unless the user
    asked. The confirm-word trigger in the todo rules is that ask: there, the tick and the

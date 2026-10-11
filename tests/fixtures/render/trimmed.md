@@ -129,7 +129,7 @@ key and the tag survive the rewrite.
 <!-- /prompt-todo:codeMarkers -->
 
 <!-- prompt-todo:promptScores -->
-**Prompt scores.** Whenever an item is rewritten to its ideal prompt (a confirm word, `/todoIdealPrompt --replace`, `/todoIdealAll`, `/todoReverse`), the original prompt gets a score for how close it was to the ideal one, appended to the end of the item line as ` (N/5)` — after the ideal prompt's first line, sub-bullets untouched: `- [x] #12 PROJ-123 IOS: Rotate the owner label with the device (3/5)`. 5: the original already was the ideal prompt. 4: one small addition. 3: a constraint or two only surfaced through corrections. 2: the intent was there, most constraints came from corrections. 1: a bare pointer ("fix it"); the result came from the dialog. Discovery no prompt could have skipped (a real bug hunt) does not lower the score. A rewrite replaces an existing ` (N/5)`, never adds a second; never on a personal (ignored) row. `/todoIdealPrompt` prints the score with one clause of why as the first Feedback bullet, with or without `--replace`; `/todoIdealPrompt #N --score` writes only the score to the item line, its text stays. `/todoScore off` turns the scores off.
+**Prompt scores.** Whenever an item is rewritten to its ideal prompt (a confirm word, `/todoIdealPrompt --replace`, `/todoIdealAll`, `/todoReverse`), the original prompt gets a score for how close it was to the ideal one, appended to the end of the item line as ` (N/5)` — after the ideal prompt's first line, sub-bullets untouched: `- [x] #12 PROJ-123 IOS: Rotate the owner label with the device (3/5)`. 5: the original already was the ideal prompt. 4: one small addition. 3: a constraint or two only surfaced through corrections. 2: the intent was there, most constraints came from corrections. 1: a bare pointer ("fix it"); the result came from the dialog. Discovery no prompt could have skipped (a real bug hunt) does not lower the score. A rewrite replaces an existing ` (N/5)`, never adds a second; never on a personal (ignored) row. `/todoIdealPrompt` prints the score with one clause of why as the first Feedback bullet, with or without `--replace`; a bare `/todoIdealPrompt #N` also writes that score — and only the score — to the item line, its text stays (`--no-score` prints only). `/todoScore off` turns the scores off.
 <!-- /prompt-todo:promptScores -->
 
 <!-- prompt-todo:lineWidth -->
@@ -138,9 +138,9 @@ key and the tag survive the rewrite.
 
 **/todoIdealPrompt.** After a task is confirmed fixed, the `/todoIdealPrompt` skill distills
 the dialog into the prompt that would have produced the result in one try. That skill may edit
-the todo file **only** when invoked with `--replace` (replacing the item's text with the ideal
-prompt) or `--score` (appending the original prompt's ` (N/5)` to the item line, text kept);
-without a flag it prints only.
+the todo file in two ways only: `--replace` replaces the item's text with the ideal prompt;
+without a flag (or with `--score`) it appends the original prompt's ` (N/5)` to the item line,
+text kept. With `--no-score` it prints only.
 
 **/todoIdealAll.** The batch pass: rewrites every session-worked `[x]` item's text to its ideal
 prompt. It may edit the todo file by design; it never renumbers ids (assigning placeholder ids

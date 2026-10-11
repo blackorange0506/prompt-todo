@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- `/todoIdealPrompt #N` scores by default: without a flag it now writes the original prompt's
+  ` (N/5)` to the item line, text kept — what `--score` did. New `--no-score` prints only and
+  leaves the todo file alone (`--replace --no-score` rewrites without a score). The bare form
+  follows `/todoScore`: off means print only, and `--score` remains the explicit ask that
+  scores anyway. The skill, the Prompt scores rule, `/todoScore`, the readme and the render
+  snapshots say so.
 - Jira attachments are really downloaded now. The Atlassian MCP `fetch` tool the skill named
   takes an issue or page id and returns its text — it cannot fetch an attachment URL and
   returns no file bytes — and `getJiraIssue` leaves the attachment list out unless

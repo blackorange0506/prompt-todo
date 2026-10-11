@@ -43,7 +43,7 @@ turns the session's finished work into prompt-history the user can learn from.
 ## Notes
 
 - This skill edits the user's todo file by design — the per-skill restriction that
-  `/todoIdealPrompt` may only edit with `--replace` does not apply here.
+  `/todoIdealPrompt` may only change an item's text with `--replace` does not apply here.
 - Feedback bullets (what the original prompt lacked) are printed only if the user asks; the
   batch pass keeps the reply to the summary, unlike single-item `/todoIdealPrompt`.
 - If nothing qualifies (no session-worked done items), say so and change nothing.

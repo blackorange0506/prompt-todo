@@ -198,8 +198,9 @@ def code_markers_block(cfg):
 def prompt_scores_block(cfg):
     if cfg["promptScores"] == "off":
         return ("**Prompt scores — off.** No ` (N/5)` score is written when an item is rewritten; scores "
-                "already on item lines stay. `/todoIdealPrompt #N --score` still scores that one item on "
-                "request. `/todoScore on` turns them on.\n")
+                "already on item lines stay, and a bare `/todoIdealPrompt #N` prints only. "
+                "`/todoIdealPrompt #N --score` still scores that one item on request. "
+                "`/todoScore on` turns them on.\n")
     return ("**Prompt scores.** Whenever an item is rewritten to its ideal prompt (a confirm word, "
             "`/todoIdealPrompt --replace`, `/todoIdealAll`, `/todoReverse`), the original prompt gets a "
             "score for how close it was to the ideal one, appended to the end of the item line as "
@@ -211,8 +212,9 @@ def prompt_scores_block(cfg):
             "prompt could have skipped (a real bug hunt) does not lower the score. A rewrite replaces an "
             "existing ` (N/5)`, never adds a second; never on a {{ignoreRows}} row. `/todoIdealPrompt` "
             "prints the score with one clause of why as the first Feedback bullet, with or without "
-            "`--replace`; `/todoIdealPrompt #N --score` writes only the score to the item line, its text "
-            "stays. `/todoScore off` turns the scores off.\n".replace("{{ignoreRows}}", ignore_rows(cfg)))
+            "`--replace`; a bare `/todoIdealPrompt #N` also writes that score — and only the score — to "
+            "the item line, its text stays (`--no-score` prints only). `/todoScore off` turns the "
+            "scores off.\n".replace("{{ignoreRows}}", ignore_rows(cfg)))
 
 
 def line_width_block(cfg):
